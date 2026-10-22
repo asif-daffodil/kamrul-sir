@@ -260,9 +260,9 @@
                             </a>
 
                             <a
-                                href="{{ route('cart.index') }}"
+                                href="{{ route('checkout.index') }}"
                                 @click="open = false; $wire.close()"
-                                class="w-full py-3 rounded-2xl bg-rose-900 hover:bg-rose-800 text-white font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition"
+                                class="w-full py-3 rounded-2xl bg-rose-900 hover:bg-rose-800 text-white font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition cursor-pointer"
                             >
                                 <span>Proceed to Checkout (৳ {{ number_format($calculation['subtotal']) }})</span>
                             </a>

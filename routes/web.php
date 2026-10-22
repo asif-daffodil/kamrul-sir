@@ -12,6 +12,8 @@ Route::get('/products', [CategoryController::class, 'index'])->name('products.in
 Route::get('/category/{slug}', [CategoryController::class, 'show'])->name('category.show');
 Route::get('/product/{slug}', [ProductDetailsController::class, 'show'])->name('product.show');
 Route::get('/cart', \App\Livewire\Cart\CartPage::class)->name('cart.index');
+Route::get('/checkout', \App\Livewire\Checkout\CheckoutPage::class)->name('checkout.index');
+Route::get('/order-success/{orderNumber}', \App\Livewire\Checkout\OrderSuccessPage::class)->name('checkout.success');
 
 Route::get('/api/search', [StorefrontController::class, 'search'])->name('storefront.search');
 Route::get('/api/cart/count', [StorefrontController::class, 'cartCount'])->name('storefront.cart.count');

@@ -378,13 +378,13 @@
 
                     <!-- Checkout Primary Button -->
                     <div class="space-y-3 pt-2">
-                        <button
-                            type="button"
-                            class="w-full py-4 rounded-2xl bg-rose-900 hover:bg-rose-800 text-white font-black text-sm uppercase tracking-wider shadow-xl hover:shadow-rose-900/30 transition-all flex items-center justify-center gap-2"
+                        <a
+                            href="{{ route('checkout.index') }}"
+                            class="w-full py-4 rounded-2xl bg-rose-900 hover:bg-rose-800 text-white font-black text-sm uppercase tracking-wider shadow-xl hover:shadow-rose-900/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
                         >
                             <span>Proceed to Checkout</span>
                             <span>→</span>
-                        </button>
+                        </a>
 
                         <a
                             href="https://wa.me/8801700000000?text={{ urlencode('Hi [BRAND_NAME]! I want to complete my order of ' . $calculation['items_count'] . ' pairs for BDT ' . $calculation['grand_total']) }}"
