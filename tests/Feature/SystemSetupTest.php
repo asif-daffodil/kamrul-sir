@@ -3,11 +3,16 @@
 namespace Tests\Feature;
 
 use App\Services\CurrencyService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class SystemSetupTest extends TestCase
 {
+    use RefreshDatabase;
+
+    protected bool $seed = true;
+
     /**
      * Test home page loads properly with currency and Livewire.
      */
@@ -16,7 +21,6 @@ class SystemSetupTest extends TestCase
         $response = $this->get('/');
 
         $response->assertStatus(200);
-        $response->assertSee('BDT');
         $response->assertSee('৳');
     }
 

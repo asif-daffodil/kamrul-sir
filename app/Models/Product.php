@@ -81,16 +81,121 @@ class Product extends Model implements HasMedia
 
     public function getMinPriceAttribute(): float
     {
-        return (float) ($this->variants()->min('price') ?? $this->base_price);
+        if ($this->relationLoaded('variants') && $this->variants->isNotEmpty()) {
+            return (float) ($this->variants->min('price') ?? $this->base_price);
+        }
+
+        return (float) $this->base_price;
     }
 
     public function getMaxPriceAttribute(): float
     {
-        return (float) ($this->variants()->max('price') ?? $this->base_price);
+        if ($this->relationLoaded('variants') && $this->variants->isNotEmpty()) {
+            return (float) ($this->variants->max('price') ?? $this->base_price);
+        }
+
+        return (float) $this->base_price;
+    }
+
+    public function getEffectivePriceAttribute(): float
+    {
+        if ($this->relationLoaded('variants') && $this->variants->isNotEmpty()) {
+            $minSale = $this->variants->whereNotNull('sale_price')->min('sale_price');
+            if ($minSale !== null) {
+                return (float) $minSale;
+            }
+            return (float) ($this->variants->min('price') ?? $this->base_price);
+        }
+
+        return (float) $this->base_price;
+    }
+
+    public function getOriginalPriceAttribute(): float
+    {
+        if ($this->relationLoaded('variants') && $this->variants->isNotEmpty()) {
+            return (float) ($this->variants->max('price') ?? $this->base_price);
+        }
+
+        return (float) $this->base_price;
+    }
+
+    public function getHasDiscountAttribute(): bool
+    {
+        return $this->effective_price < $this->original_price;
+    }
+
+    public function getDiscountPercentageAttribute(): int
+    {
+        if (! $this->has_discount || $this->original_price <= 0) {
+            return 0;
+        }
+
+        return (int) round((($this->original_price - $this->effective_price) / $this->original_price) * 100);
+    }
+
+    public function getAvailableSizesAttribute(): array
+    {
+        if ($this->relationLoaded('variants')) {
+            return $this->variants->where('stock', '>', 0)->pluck('size')->unique()->sort()->values()->toArray();
+        }
+
+        return [];
+    }
+
+    public function getAvailableColorsAttribute(): array
+    {
+        if ($this->relationLoaded('variants')) {
+            return $this->variants->where('stock', '>', 0)->map(fn ($v) => [
+                'name' => $v->color,
+                'code' => $v->color_code,
+            ])->unique('name')->values()->toArray();
+        }
+
+        return [];
+    }
+
+    public function getAverageRatingAttribute(): float
+    {
+        if ($this->relationLoaded('approvedReviews') && $this->approvedReviews->isNotEmpty()) {
+            return round($this->approvedReviews->avg('rating'), 1);
+        }
+
+        return 4.9;
+    }
+
+    public function getReviewsCountAttribute(): int
+    {
+        if ($this->relationLoaded('approvedReviews')) {
+            return $this->approvedReviews->count();
+        }
+
+        return 0;
     }
 
     public function getTotalStockAttribute(): int
     {
-        return (int) $this->variants()->sum('stock');
+        if ($this->relationLoaded('variants')) {
+            return (int) $this->variants->sum('stock');
+        }
+
+        return 0;
+    }
+
+    public function getImageUrlAttribute(): string
+    {
+        if ($this->relationLoaded('primaryImage') && $this->primaryImage && ! empty($this->primaryImage->image_path)) {
+            $path = $this->primaryImage->image_path;
+            if (str_starts_with($path, 'http')) {
+                return $path;
+            }
+            if (file_exists(public_path($path))) {
+                return asset($path);
+            }
+            if (file_exists(public_path('storage/' . $path))) {
+                return asset('storage/' . $path);
+            }
+        }
+
+        return asset('images/shoes/placeholder-shoe.webp');
     }
 }

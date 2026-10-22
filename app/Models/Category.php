@@ -55,4 +55,21 @@ class Category extends Model
     {
         return $query->whereNull('parent_id');
     }
+
+    public function getImageUrlAttribute(): string
+    {
+        if (! empty($this->image)) {
+            if (str_starts_with($this->image, 'http')) {
+                return $this->image;
+            }
+            if (file_exists(public_path($this->image))) {
+                return asset($this->image);
+            }
+            if (file_exists(public_path('storage/' . $this->image))) {
+                return asset('storage/' . $this->image);
+            }
+        }
+
+        return asset('images/categories/' . $this->slug . '.webp');
+    }
 }
