@@ -226,6 +226,7 @@
 
                     <!-- Shopping Cart Icon with Live Count -->
                     <button
+                        id="header-cart-button"
                         type="button"
                         @click="$dispatch('open-mini-cart')"
                         class="relative p-2.5 text-slate-800 hover:text-rose-900 rounded-full hover:bg-stone-100 transition flex items-center justify-center group cursor-pointer"

@@ -1,7 +1,10 @@
 <div>
     <!-- BACKDROP & SLIDE-OVER DRAWER -->
     <div
-        x-data="{ open: @entangle('isOpen') }"
+        x-data="{ open: false }"
+        x-init="$watch('$wire.isOpen', value => open = value)"
+        @open-mini-cart.window="open = true; $wire.open()"
+        @close-mini-cart.window="open = false; $wire.close()"
         x-show="open"
         x-cloak
         class="fixed inset-0 z-50 overflow-hidden"
@@ -50,6 +53,7 @@
                     </div>
 
                     <button
+                        id="close-mini-cart-button"
                         type="button"
                         @click="open = false; $wire.close()"
                         class="p-2 text-stone-400 hover:text-slate-800 rounded-full hover:bg-stone-200/60 transition"
