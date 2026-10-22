@@ -170,7 +170,8 @@ class OrderService
 
             // 8. Process payment via the PaymentManager abstraction
             $gateway = $this->paymentManager->getGateway($order->payment_method);
-            $gateway->processPayment($order, $data);
+            $paymentResult = $gateway->processPayment($order, $data);
+            $order->payment_redirect_url = $paymentResult->redirectUrl;
 
             // 9. Record initial order status history
             OrderStatusHistory::create([

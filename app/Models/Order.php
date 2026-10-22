@@ -14,6 +14,11 @@ class Order extends Model
 {
     use HasFactory, Notifiable, SoftDeletes;
 
+    /**
+     * Temporary gateway redirect URL (e.g. for online payment gateway redirection).
+     */
+    public ?string $payment_redirect_url = null;
+
     protected $fillable = [
         'order_number',
         'user_id',

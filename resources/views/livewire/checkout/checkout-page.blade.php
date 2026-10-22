@@ -246,16 +246,15 @@
                     </div>
 
                     <div class="space-y-3">
-                        <!-- Cash on Delivery (Active) -->
+                        <!-- Cash on Delivery (COD) -->
                         <label
-                            class="relative flex items-start gap-4 p-4 rounded-2xl border-2 border-rose-900 bg-rose-50/40 cursor-pointer shadow-xs select-none"
+                            class="relative flex items-start gap-4 p-4 rounded-2xl cursor-pointer shadow-xs select-none transition {{ $payment_method === 'cod' ? 'border-2 border-rose-900 bg-rose-50/40' : 'border border-stone-200 bg-white hover:border-stone-300' }}"
                         >
                             <input
                                 type="radio"
                                 name="payment_method"
                                 value="cod"
-                                wire:model="payment_method"
-                                checked
+                                wire:model.live="payment_method"
                                 class="w-4 h-4 text-rose-900 mt-1 focus:ring-rose-800"
                             >
                             <div class="flex-1">
@@ -265,7 +264,7 @@
                                         <span>Cash on Delivery (COD)</span>
                                     </span>
                                     <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px] uppercase">
-                                        Recommended
+                                        Pay at Doorstep
                                     </span>
                                 </div>
                                 <p class="text-xs text-stone-600 mt-1">
@@ -274,26 +273,32 @@
                             </div>
                         </label>
 
-                        <!-- bKash / Nagad / Online Cards (Extensible Placeholder) -->
-                        <div
-                            class="relative flex items-start gap-4 p-4 rounded-2xl border border-stone-200 bg-stone-50/60 opacity-75"
+                        <!-- SSLCommerz Online Payment (Cards, bKash, Nagad) -->
+                        <label
+                            class="relative flex items-start gap-4 p-4 rounded-2xl cursor-pointer shadow-xs select-none transition {{ $payment_method === 'sslcommerz' ? 'border-2 border-rose-900 bg-rose-50/40' : 'border border-stone-200 bg-white hover:border-stone-300' }}"
                         >
-                            <div class="w-4 h-4 rounded-full border border-stone-300 mt-1 bg-stone-200"></div>
+                            <input
+                                type="radio"
+                                name="payment_method"
+                                value="sslcommerz"
+                                wire:model.live="payment_method"
+                                class="w-4 h-4 text-rose-900 mt-1 focus:ring-rose-800"
+                            >
                             <div class="flex-1">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-sm font-bold text-slate-700 flex items-center gap-2">
+                                    <span class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
                                         <span>💳</span>
-                                        <span>bKash / Nagad / Debit & Credit Card</span>
+                                        <span>Cards, bKash & Nagad (SSLCommerz)</span>
                                     </span>
-                                    <span class="px-2.5 py-0.5 rounded-full bg-stone-200 text-stone-600 font-bold text-[10px] uppercase">
-                                        Coming Soon
+                                    <span class="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 font-bold text-[10px] uppercase">
+                                        Instant Online
                                     </span>
                                 </div>
-                                <p class="text-xs text-stone-500 mt-1">
-                                    Direct online payment gateway integration is being onboarded. You can also pay via bKash upon courier arrival.
+                                <p class="text-xs text-stone-600 mt-1">
+                                    Pay securely online with Visa, Mastercard, bKash, Nagad, Rocket, Upay or Internet Banking via SSLCommerz gateway.
                                 </p>
                             </div>
-                        </div>
+                        </label>
                     </div>
                 </div>
 

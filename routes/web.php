@@ -45,3 +45,13 @@ Route::post('/api/cart/quick-add', [StorefrontController::class, 'quickAddToCart
 // Admin Invoice Route
 Route::get('/admin/orders/{order}/invoice', [OrderInvoiceController::class, 'show'])
     ->name('admin.orders.invoice');
+
+// SSLCommerz Payment Gateway Callbacks & IPN
+Route::post('/payment/sslcommerz/success', [\App\Http\Controllers\Payment\SslCommerzCallbackController::class, 'success'])
+    ->name('payment.sslcommerz.success');
+Route::post('/payment/sslcommerz/fail', [\App\Http\Controllers\Payment\SslCommerzCallbackController::class, 'fail'])
+    ->name('payment.sslcommerz.fail');
+Route::post('/payment/sslcommerz/cancel', [\App\Http\Controllers\Payment\SslCommerzCallbackController::class, 'cancel'])
+    ->name('payment.sslcommerz.cancel');
+Route::post('/payment/sslcommerz/ipn', [\App\Http\Controllers\Payment\SslCommerzCallbackController::class, 'ipn'])
+    ->name('payment.sslcommerz.ipn');

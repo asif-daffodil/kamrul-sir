@@ -11,9 +11,10 @@ class PaymentManager
      */
     protected array $gateways = [];
 
-    public function __construct()
+    public function __construct(?SslCommerzService $sslCommerzService = null)
     {
         $this->registerGateway(new CashOnDeliveryGateway());
+        $this->registerGateway(new SslCommerzGateway($sslCommerzService ?? app(SslCommerzService::class)));
     }
 
     /**

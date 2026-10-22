@@ -51,7 +51,7 @@ class CheckoutPage extends Component
             'shipping_thana' => ['required', 'string', 'min:2', 'max:100'],
             'shipping_address' => ['required', 'string', 'min:5', 'max:500'],
             'notes' => ['nullable', 'string', 'max:500'],
-            'payment_method' => ['required', 'string', 'in:cod'],
+            'payment_method' => ['required', 'string', 'in:cod,sslcommerz'],
         ];
     }
 
@@ -152,7 +152,12 @@ class CheckoutPage extends Component
             // 5. Notify layout cart count updated
             $this->dispatch('cart-count-updated', count: 0);
 
-            // 6. Redirect to order success page
+            // 6. Redirect to online payment gateway if required (e.g. SSLCommerz)
+            if (! empty($order->payment_redirect_url)) {
+                return redirect()->away($order->payment_redirect_url);
+            }
+
+            // 7. Redirect to order success page
             return redirect()->route('checkout.success', $order->order_number);
         } catch (OrderPlacementException $e) {
             $this->submissionError = $e->getMessage();
