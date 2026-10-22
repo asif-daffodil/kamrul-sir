@@ -12,7 +12,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(\App\Services\Sms\SmsManager::class, function () {
+            return new \App\Services\Sms\SmsManager();
+        });
+
+        $this->app->bind(\App\Services\Sms\SmsProviderInterface::class, function ($app) {
+            return $app->make(\App\Services\Sms\SmsManager::class)->getProvider();
+        });
     }
 
     /**

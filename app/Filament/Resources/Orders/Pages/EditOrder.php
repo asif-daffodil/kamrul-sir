@@ -27,13 +27,22 @@ class EditOrder extends EditRecord
         $newStatus = $this->record->status;
 
         if ($this->previousStatus !== null && $this->previousStatus !== $newStatus) {
+            $comment = $this->data['status_comment'] ?? 'Status updated by admin/operations team.';
+
             OrderStatusHistory::create([
                 'order_id' => $this->record->id,
                 'from_status' => $this->previousStatus,
                 'to_status' => $newStatus,
                 'changed_by' => auth()->id(),
-                'comment' => $this->data['status_comment'] ?? 'Status updated by admin/operations team.',
+                'comment' => $comment,
             ]);
+
+            $this->record->notify(new \App\Notifications\OrderStatusUpdatedNotification(
+                $this->record,
+                $this->previousStatus,
+                $newStatus,
+                $comment
+            ));
         }
     }
 

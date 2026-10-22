@@ -11,9 +11,13 @@ use App\Models\OrderStatusHistory;
 use App\Models\ProductVariant;
 use App\Models\Setting;
 use App\Models\User;
+use App\Notifications\AdminNewOrderNotification;
+use App\Notifications\OrderConfirmationNotification;
+use App\Notifications\OrderStatusUpdatedNotification;
 use App\Services\Payment\PaymentManager;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 
 class OrderService
@@ -180,6 +184,53 @@ class OrderService
             // 10. Clear checked out cart
             $cart->items()->delete();
             $cart->update(['coupon_code' => null]);
+
+            return $order;
+        });
+
+        // 11. Dispatch queued customer and admin notifications (after transaction commit)
+        $this->dispatchOrderPlacedNotifications($order);
+
+        return $order;
+    }
+
+    /**
+     * Dispatch queued notifications upon order placement.
+     */
+    public function dispatchOrderPlacedNotifications(Order $order): void
+    {
+        // 1. Send customer confirmation notification (Email + SMS)
+        $order->notify(new OrderConfirmationNotification($order));
+
+        // 2. Send admin new-order notification (Email)
+        $adminEmail = Setting::get('admin_notification_email', config('mail.from.address', 'admin@brandfootwear.com'));
+        Notification::route('mail', $adminEmail)->notify(new AdminNewOrderNotification($order));
+    }
+
+    /**
+     * Transition order status, log history, and dispatch queued status notification.
+     */
+    public function updateStatus(Order $order, string $newStatus, ?string $comment = null, ?User $changer = null): Order
+    {
+        return DB::transaction(function () use ($order, $newStatus, $comment, $changer) {
+            $fromStatus = $order->status;
+
+            if ($fromStatus === $newStatus) {
+                return $order;
+            }
+
+            $order->update(['status' => $newStatus]);
+
+            OrderStatusHistory::create([
+                'order_id' => $order->id,
+                'from_status' => $fromStatus,
+                'to_status' => $newStatus,
+                'changed_by' => $changer?->id ?? Auth::id(),
+                'comment' => $comment ?: 'Status updated to ' . ucfirst($newStatus),
+            ]);
+
+            // Dispatch queued status update notification (Email + SMS)
+            $order->notify(new OrderStatusUpdatedNotification($order, $fromStatus, $newStatus, $comment));
 
             return $order;
         });
