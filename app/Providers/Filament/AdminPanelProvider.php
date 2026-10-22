@@ -28,8 +28,18 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->brandName(config('shop.store.name', '[BRAND_NAME] Footwear'))
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Rose,
+                'gray' => Color::Slate,
+            ])
+            ->navigationGroups([
+                'Catalog',
+                'Sales & Orders',
+                'Customers & CRM',
+                'Promotions & Content',
+                'Retail Outlets',
+                'Configuration',
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
@@ -38,8 +48,9 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
+                \App\Filament\Widgets\OrdersOverviewWidget::class,
+                \App\Filament\Widgets\LowStockWidget::class,
                 AccountWidget::class,
-                FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

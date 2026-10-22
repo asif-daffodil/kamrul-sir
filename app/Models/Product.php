@@ -23,6 +23,9 @@ class Product extends Model implements HasMedia
         'short_description',
         'description',
         'base_price',
+        'meta_title',
+        'meta_description',
+        'meta_keywords',
         'is_featured',
         'is_active',
     ];
