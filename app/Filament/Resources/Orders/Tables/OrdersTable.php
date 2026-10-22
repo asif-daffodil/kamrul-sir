@@ -61,6 +61,35 @@ class OrdersTable
                         'danger' => 'cancelled',
                         'gray' => 'returned',
                     ]),
+                TextColumn::make('courier_name')
+                    ->label('Courier')
+                    ->badge()
+                    ->formatStateUsing(fn (?string $state) => $state ? ucfirst($state) : 'Unassigned')
+                    ->color(fn (?string $state) => match ($state) {
+                        'steadfast' => 'info',
+                        'pathao' => 'danger',
+                        default => 'gray',
+                    })
+                    ->toggleable(),
+                TextColumn::make('courier_tracking_code')
+                    ->label('Tracking Code')
+                    ->searchable()
+                    ->copyable()
+                    ->copyMessage('Tracking code copied')
+                    ->placeholder('—')
+                    ->toggleable(),
+                TextColumn::make('courier_status')
+                    ->label('Courier Status')
+                    ->badge()
+                    ->colors([
+                        'warning' => 'pending',
+                        'primary' => 'in_transit',
+                        'success' => 'delivered',
+                        'danger' => 'cancelled',
+                        'gray' => 'returned',
+                    ])
+                    ->placeholder('—')
+                    ->toggleable(),
                 TextColumn::make('created_at')
                     ->label('Placed At')
                     ->dateTime('d M Y, h:i A')
@@ -77,6 +106,12 @@ class OrdersTable
                         'delivered' => 'Delivered',
                         'cancelled' => 'Cancelled',
                         'returned' => 'Returned',
+                    ]),
+                SelectFilter::make('courier_name')
+                    ->label('Courier')
+                    ->options([
+                        'steadfast' => 'Steadfast Courier',
+                        'pathao' => 'Pathao Courier',
                     ]),
                 SelectFilter::make('payment_status')
                     ->options([
@@ -95,6 +130,69 @@ class OrdersTable
                 TrashedFilter::make(),
             ])
             ->recordActions([
+                Action::make('send_to_courier')
+                    ->label('Send to Courier')
+                    ->icon(Heroicon::OutlinedTruck)
+                    ->color('primary')
+                    ->modalHeading(fn (Order $record) => 'Book Courier Consignment for #' . $record->order_number)
+                    ->modalDescription('Create parcel consignment with Bangladeshi courier and generate tracking number.')
+                    ->visible(fn (Order $record) => empty($record->courier_tracking_code) && ! in_array($record->status, ['cancelled', 'delivered']))
+                    ->form([
+                        \Filament\Forms\Components\Select::make('courier')
+                            ->label('Select Courier Service')
+                            ->options([
+                                'steadfast' => 'Steadfast Courier (BD Nationwide)',
+                                'pathao' => 'Pathao Courier (Express / Standard)',
+                            ])
+                            ->default(config('courier.default', 'steadfast'))
+                            ->required()
+                            ->native(false),
+                        \Filament\Forms\Components\TextInput::make('note')
+                            ->label('Delivery Instructions / Note')
+                            ->default(fn (Order $record) => $record->notes ?: 'Women Footwear - Handle with care')
+                            ->helperText('Courier rider instructions (e.g. Call before delivery)'),
+                    ])
+                    ->action(function (Order $record, array $data) {
+                        /** @var \App\Services\Courier\CourierManager $manager */
+                        $manager = app(\App\Services\Courier\CourierManager::class);
+
+                        $result = $manager->sendOrderToCourier(
+                            order: $record,
+                            driverName: $data['courier'],
+                            options: ['note' => $data['note'] ?? null]
+                        );
+
+                        if ($result->successful) {
+                            $record->refresh();
+                            \Filament\Notifications\Notification::make()
+                                ->success()
+                                ->title('Consignment created with ' . ucfirst($data['courier']))
+                                ->body("Tracking Code: {$record->courier_tracking_code}")
+                                ->send();
+                        } else {
+                            \Filament\Notifications\Notification::make()
+                                ->danger()
+                                ->title('Courier Booking Failed')
+                                ->body($result->message)
+                                ->persistent()
+                                ->send();
+                        }
+                    }),
+                Action::make('sync_courier_status')
+                    ->label('Sync Status')
+                    ->icon(Heroicon::OutlinedArrowPath)
+                    ->color('slate')
+                    ->visible(fn (Order $record) => ! empty($record->courier_tracking_code))
+                    ->action(function (Order $record) {
+                        \App\Jobs\SyncCourierDeliveryStatusJob::dispatchSync($record->id);
+
+                        $record->refresh();
+                        \Filament\Notifications\Notification::make()
+                            ->info()
+                            ->title('Status Synced')
+                            ->body("Courier Status: " . ucfirst($record->courier_status ?? 'Unknown'))
+                            ->send();
+                    }),
                 Action::make('print_invoice')
                     ->label('Invoice')
                     ->icon(Heroicon::OutlinedPrinter)

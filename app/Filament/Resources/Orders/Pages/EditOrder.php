@@ -49,6 +49,69 @@ class EditOrder extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('send_to_courier')
+                ->label('Send to Courier')
+                ->icon(Heroicon::OutlinedTruck)
+                ->color('primary')
+                ->modalHeading(fn () => 'Book Courier Consignment for #' . $this->record->order_number)
+                ->modalDescription('Create parcel consignment with Bangladeshi courier and generate tracking number.')
+                ->visible(fn () => empty($this->record->courier_tracking_code) && ! in_array($this->record->status, ['cancelled', 'delivered']))
+                ->form([
+                    \Filament\Forms\Components\Select::make('courier')
+                        ->label('Select Courier Service')
+                        ->options([
+                            'steadfast' => 'Steadfast Courier (BD Nationwide)',
+                            'pathao' => 'Pathao Courier (Express / Standard)',
+                        ])
+                        ->default(config('courier.default', 'steadfast'))
+                        ->required()
+                        ->native(false),
+                    \Filament\Forms\Components\TextInput::make('note')
+                        ->label('Delivery Instructions / Note')
+                        ->default(fn () => $this->record->notes ?: 'Women Footwear - Handle with care')
+                        ->helperText('Courier rider instructions (e.g. Call before delivery)'),
+                ])
+                ->action(function (array $data) {
+                    /** @var \App\Services\Courier\CourierManager $manager */
+                    $manager = app(\App\Services\Courier\CourierManager::class);
+
+                    $result = $manager->sendOrderToCourier(
+                        order: $this->record,
+                        driverName: $data['courier'],
+                        options: ['note' => $data['note'] ?? null]
+                    );
+
+                    if ($result->successful) {
+                        $this->record->refresh();
+                        \Filament\Notifications\Notification::make()
+                            ->success()
+                            ->title('Consignment created with ' . ucfirst($data['courier']))
+                            ->body("Tracking Code: {$this->record->courier_tracking_code}")
+                            ->send();
+                    } else {
+                        \Filament\Notifications\Notification::make()
+                            ->danger()
+                            ->title('Courier Booking Failed')
+                            ->body($result->message)
+                            ->persistent()
+                            ->send();
+                    }
+                }),
+            Action::make('sync_courier_status')
+                ->label('Sync Status')
+                ->icon(Heroicon::OutlinedArrowPath)
+                ->color('slate')
+                ->visible(fn () => ! empty($this->record->courier_tracking_code))
+                ->action(function () {
+                    \App\Jobs\SyncCourierDeliveryStatusJob::dispatchSync($this->record->id);
+
+                    $this->record->refresh();
+                    \Filament\Notifications\Notification::make()
+                        ->info()
+                        ->title('Status Synced')
+                        ->body("Courier Status: " . ucfirst($this->record->courier_status ?? 'Unknown'))
+                        ->send();
+                }),
             Action::make('print_invoice')
                 ->label('Print Invoice')
                 ->icon(Heroicon::OutlinedPrinter)

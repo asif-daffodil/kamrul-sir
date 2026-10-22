@@ -136,6 +136,26 @@
                     </div>
                 </div>
 
+                @if($order->courier_tracking_code)
+                    <!-- Active Courier Consignment Tracking Badge -->
+                    <div class="p-4 rounded-2xl bg-indigo-50/70 border border-indigo-200/60 flex flex-wrap items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">🚚</span>
+                            <div>
+                                <p class="text-xs font-bold text-slate-900">
+                                    Dispatched with {{ ucfirst($order->courier_name) }} Courier
+                                </p>
+                                <p class="text-[11px] text-stone-600 mt-0.5">
+                                    Consignment / Tracking: <strong class="text-indigo-900 font-mono select-all">{{ $order->courier_tracking_code }}</strong>
+                                </p>
+                            </div>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-indigo-100 text-indigo-800">
+                            {{ ucfirst(str_replace('_', ' ', $order->courier_status ?? 'In Transit')) }}
+                        </span>
+                    </div>
+                @endif
+
                 @if($isSpecialStatus)
                     <!-- Special Alert for Cancelled or Returned -->
                     <div class="p-5 rounded-2xl {{ $order->status === 'cancelled' ? 'bg-rose-50 border border-rose-200 text-rose-900' : 'bg-purple-50 border border-purple-200 text-purple-900' }}">

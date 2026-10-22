@@ -66,6 +66,32 @@ class OrderForm
                             ->columnSpanFull(),
                     ]),
 
+                Section::make('Courier & Logistics Delivery')
+                    ->description('Steadfast and Pathao consignment details and live courier status')
+                    ->columns(3)
+                    ->collapsible()
+                    ->schema([
+                        TextInput::make('courier_name')
+                            ->label('Courier Service')
+                            ->formatStateUsing(fn (?string $state) => $state ? ucfirst($state) : 'Not Dispatched')
+                            ->disabled(),
+                        TextInput::make('courier_tracking_code')
+                            ->label('Tracking Code')
+                            ->placeholder('No tracking code')
+                            ->disabled(),
+                        TextInput::make('courier_consignment_id')
+                            ->label('Consignment ID')
+                            ->placeholder('No consignment ID')
+                            ->disabled(),
+                        TextInput::make('courier_status')
+                            ->label('Courier Status')
+                            ->placeholder('Not assigned')
+                            ->disabled(),
+                        TextInput::make('courier_sent_at')
+                            ->label('Dispatched At')
+                            ->disabled(),
+                    ]),
+
                 Section::make('Customer & Shipping Details')
                     ->description('Contact and delivery address across Bangladesh')
                     ->columns(3)

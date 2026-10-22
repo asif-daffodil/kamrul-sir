@@ -39,6 +39,12 @@ class Order extends Model
         'payment_method',
         'coupon_code',
         'notes',
+        'courier_name',
+        'courier_tracking_code',
+        'courier_consignment_id',
+        'courier_status',
+        'courier_response',
+        'courier_sent_at',
     ];
 
     protected function casts(): array
@@ -48,6 +54,8 @@ class Order extends Model
             'discount_amount' => 'decimal:2',
             'delivery_charge' => 'decimal:2',
             'total' => 'decimal:2',
+            'courier_response' => 'array',
+            'courier_sent_at' => 'datetime',
         ];
     }
 

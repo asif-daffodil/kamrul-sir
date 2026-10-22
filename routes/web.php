@@ -55,3 +55,9 @@ Route::post('/payment/sslcommerz/cancel', [\App\Http\Controllers\Payment\SslComm
     ->name('payment.sslcommerz.cancel');
 Route::post('/payment/sslcommerz/ipn', [\App\Http\Controllers\Payment\SslCommerzCallbackController::class, 'ipn'])
     ->name('payment.sslcommerz.ipn');
+
+// Courier Delivery Status Webhooks (Steadfast & Pathao)
+Route::post('/api/webhooks/courier/steadfast', [\App\Http\Controllers\Courier\CourierWebhookController::class, 'steadfast'])
+    ->name('webhook.courier.steadfast');
+Route::post('/api/webhooks/courier/pathao', [\App\Http\Controllers\Courier\CourierWebhookController::class, 'pathao'])
+    ->name('webhook.courier.pathao');
