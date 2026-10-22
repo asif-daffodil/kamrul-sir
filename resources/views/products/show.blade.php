@@ -100,6 +100,8 @@
                     if (data.success) {
                         this.cartCount = data.cart_count;
                         this.notify('✓ Added ' + this.quantity + ' pair(s) to your shopping bag!');
+                        window.Livewire?.dispatch('cart-updated');
+                        window.Livewire?.dispatch('open-mini-cart');
                     } else {
                         this.notify('⚠ ' + (data.message || 'Could not add to bag.'));
                     }

@@ -71,6 +71,8 @@
             if (data.success) {
                 this.cartCount = data.cart_count;
                 this.notify('✓ Added to your shopping bag!');
+                window.Livewire?.dispatch('cart-updated');
+                window.Livewire?.dispatch('open-mini-cart');
             } else {
                 this.notify('⚠ ' + (data.message || 'Could not add item.'));
             }
@@ -78,7 +80,11 @@
             this.notify('⚠ Error adding to cart.');
         }
     }
-}" @keydown.escape="searchModalOpen = false; mobileMenuOpen = false">
+}"
+@keydown.escape="searchModalOpen = false; mobileMenuOpen = false"
+@cart-count-updated.window="cartCount = $event.detail.count"
+@show-toast.window="notify($event.detail.message)"
+>
 
     <!-- Top Announcement Bar -->
     <div class="bg-rose-950 text-rose-100 text-xs py-2 px-4 transition-colors">
@@ -173,9 +179,10 @@
                     </a>
 
                     <!-- Shopping Cart Icon with Live Count -->
-                    <a
-                        href="#cart-preview"
-                        class="relative p-2.5 text-slate-800 hover:text-rose-900 rounded-full hover:bg-stone-100 transition flex items-center justify-center group"
+                    <button
+                        type="button"
+                        @click="$dispatch('open-mini-cart')"
+                        class="relative p-2.5 text-slate-800 hover:text-rose-900 rounded-full hover:bg-stone-100 transition flex items-center justify-center group cursor-pointer"
                         aria-label="Shopping Bag"
                     >
                         <svg class="w-6 h-6 group-hover:scale-105 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -186,7 +193,7 @@
                             x-text="cartCount"
                             x-show="cartCount > 0"
                         >{{ $cartCount ?? 0 }}</span>
-                    </a>
+                    </button>
                 </div>
             </div>
 
@@ -525,7 +532,11 @@
             </a>
 
             <!-- Bag / Cart Tab -->
-            <a href="#cart-preview" class="relative flex flex-col items-center justify-center gap-1 hover:text-rose-900">
+            <button
+                type="button"
+                @click="$dispatch('open-mini-cart')"
+                class="relative flex flex-col items-center justify-center gap-1 hover:text-rose-900 cursor-pointer"
+            >
                 <div class="relative">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
                     <span
@@ -535,7 +546,7 @@
                     >{{ $cartCount ?? 0 }}</span>
                 </div>
                 <span>Bag</span>
-            </a>
+            </button>
         </div>
     </nav>
 
@@ -637,6 +648,9 @@
             </div>
         </div>
     </footer>
+
+    <!-- Livewire Mini-Cart Drawer Component -->
+    <livewire:cart.mini-cart />
 
     @livewireScripts
 </body>

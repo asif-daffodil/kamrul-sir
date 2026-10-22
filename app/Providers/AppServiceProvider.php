@@ -34,5 +34,11 @@ class AppServiceProvider extends ServiceProvider
                 $view->with('categories', $categories);
             }
         });
+
+        // Merge guest cart into user cart upon login
+        \Illuminate\Support\Facades\Event::listen(
+            \Illuminate\Auth\Events\Login::class,
+            \App\Listeners\MergeGuestCartOnLogin::class
+        );
     }
 }
