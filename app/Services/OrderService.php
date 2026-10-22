@@ -220,6 +220,30 @@ class OrderService
                 return $order;
             }
 
+            // 1. Restock inventory if transitioning to cancelled or returned from active status
+            if (in_array($newStatus, ['cancelled', 'returned']) && ! in_array($fromStatus, ['cancelled', 'returned'])) {
+                $order->loadMissing('items.variant');
+                foreach ($order->items as $item) {
+                    if ($item->variant) {
+                        $item->variant->increment('stock', $item->quantity);
+                    }
+                }
+            }
+
+            // 2. Decrement inventory if restoring an order from cancelled/returned back to active
+            if (! in_array($newStatus, ['cancelled', 'returned']) && in_array($fromStatus, ['cancelled', 'returned'])) {
+                $order->load('items.variant');
+                foreach ($order->items as $item) {
+                    $variant = $item->variant?->fresh();
+                    if ($variant) {
+                        if ($variant->stock < $item->quantity) {
+                            throw new \Exception("Cannot restore order #{$order->order_number}: Insufficient stock for {$item->product_name}.");
+                        }
+                        $variant->decrement('stock', $item->quantity);
+                    }
+                }
+            }
+
             $order->update(['status' => $newStatus]);
 
             OrderStatusHistory::create([

@@ -29,6 +29,16 @@ class EditOrder extends EditRecord
         if ($this->previousStatus !== null && $this->previousStatus !== $newStatus) {
             $comment = $this->data['status_comment'] ?? 'Status updated by admin/operations team.';
 
+            // Restock variants if cancelling or returning an active order
+            if (in_array($newStatus, ['cancelled', 'returned']) && ! in_array($this->previousStatus, ['cancelled', 'returned'])) {
+                $this->record->loadMissing('items.variant');
+                foreach ($this->record->items as $item) {
+                    if ($item->variant) {
+                        $item->variant->increment('stock', $item->quantity);
+                    }
+                }
+            }
+
             OrderStatusHistory::create([
                 'order_id' => $this->record->id,
                 'from_status' => $this->previousStatus,
