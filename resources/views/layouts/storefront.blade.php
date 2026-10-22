@@ -21,6 +21,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,500&display=swap" rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @livewireStyles
 </head>
 <body class="flex min-h-full flex-col font-sans" x-data="{
     mobileMenuOpen: false,
@@ -195,11 +196,14 @@
                     <a href="{{ route('home') }}" class="px-3.5 py-1.5 rounded-full font-bold text-rose-950 bg-rose-50 hover:bg-rose-100 transition">
                         Home
                     </a>
+                    <a href="{{ route('products.index') }}" class="px-3 py-1.5 rounded-lg font-semibold text-slate-700 hover:text-rose-950 hover:bg-stone-100 transition">
+                        Shop All
+                    </a>
 
-                    @foreach($categories as $cat)
+                    @foreach(($categories ?? collect()) as $cat)
                         <div class="relative group" @mouseenter="activeCategoryTab = '{{ $cat->id }}'" @mouseleave="activeCategoryTab = null">
                             <a
-                                href="#category-{{ $cat->slug }}"
+                                href="{{ route('category.show', $cat->slug) }}"
                                 class="px-3 py-1.5 rounded-lg hover:text-rose-950 hover:bg-stone-100 flex items-center gap-1 transition"
                             >
                                 <span>{{ $cat->name }}</span>
@@ -221,7 +225,7 @@
                                         <div class="space-y-1">
                                             @foreach($cat->children as $child)
                                                 <a
-                                                    href="#category-{{ $child->slug }}"
+                                                    href="{{ route('category.show', $child->slug) }}"
                                                     class="flex items-center justify-between px-3 py-2 rounded-lg text-xs text-slate-700 hover:text-rose-950 hover:bg-rose-50 font-medium transition"
                                                 >
                                                     <span>{{ $child->name }}</span>
@@ -230,7 +234,7 @@
                                             @endforeach
                                         </div>
                                         <div class="mt-3 pt-3 border-t border-stone-100">
-                                            <a href="#category-{{ $cat->slug }}" class="block text-center text-xs font-bold text-rose-900 hover:underline">
+                                            <a href="{{ route('category.show', $cat->slug) }}" class="block text-center text-xs font-bold text-rose-900 hover:underline">
                                                 View All {{ $cat->name }} →
                                             </a>
                                         </div>
@@ -322,11 +326,11 @@
             <div class="p-4 space-y-1 flex-1">
                 <p class="text-[11px] font-bold text-stone-400 uppercase tracking-wider px-3 mb-2">Footwear Categories</p>
 
-                @foreach($categories as $cat)
+                @foreach(($categories ?? collect()) as $cat)
                     <div x-data="{ expanded: false }" class="border-b border-stone-100 last:border-b-0 pb-1">
                         <div class="flex items-center justify-between">
                             <a
-                                href="#category-{{ $cat->slug }}"
+                                href="{{ route('category.show', $cat->slug) }}"
                                 class="flex-1 py-2.5 px-3 rounded-lg text-sm font-semibold text-slate-800 hover:text-rose-950 hover:bg-stone-50 flex items-center justify-between"
                                 @click="mobileMenuOpen = false"
                             >
@@ -349,7 +353,7 @@
                             <div x-show="expanded" x-collapse class="pl-6 pr-2 py-1 space-y-1 bg-stone-50/70 rounded-lg mb-2">
                                 @foreach($cat->children as $child)
                                     <a
-                                        href="#category-{{ $child->slug }}"
+                                        href="{{ route('category.show', $child->slug) }}"
                                         class="block py-1.5 px-3 text-xs text-slate-600 hover:text-rose-900 rounded-md transition"
                                         @click="mobileMenuOpen = false"
                                     >
@@ -569,9 +573,9 @@
                 <div>
                     <h3 class="text-xs font-bold text-white uppercase tracking-widest mb-4">Footwear Categories</h3>
                     <ul class="space-y-2.5 text-sm text-stone-400">
-                        @foreach($categories->take(6) as $c)
+                        @foreach(($categories ?? collect())->take(6) as $c)
                             <li>
-                                <a href="#category-{{ $c->slug }}" class="hover:text-white hover:translate-x-1 inline-block transition">
+                                <a href="{{ route('category.show', $c->slug) }}" class="hover:text-white hover:translate-x-1 inline-block transition">
                                     {{ $c->name }}
                                 </a>
                             </li>
@@ -634,5 +638,6 @@
         </div>
     </footer>
 
+    @livewireScripts
 </body>
 </html>

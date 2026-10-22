@@ -36,4 +36,25 @@ class ProductImage extends Model
     {
         return $this->belongsTo(ProductVariant::class, 'product_variant_id');
     }
+
+    public function getUrlAttribute(): string
+    {
+        if (empty($this->image_path)) {
+            return asset('images/shoes/placeholder-shoe.webp');
+        }
+
+        if (str_starts_with($this->image_path, 'http://') || str_starts_with($this->image_path, 'https://')) {
+            return $this->image_path;
+        }
+
+        if (file_exists(public_path($this->image_path))) {
+            return asset($this->image_path);
+        }
+
+        if (file_exists(public_path('storage/' . $this->image_path))) {
+            return asset('storage/' . $this->image_path);
+        }
+
+        return asset($this->image_path);
+    }
 }

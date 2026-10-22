@@ -37,7 +37,7 @@ class GenerateStorefrontAssets extends Command
         $this->info('Generating placeholder and product WebP assets...');
         $this->generateSquareAsset('public/images/shoes/placeholder-shoe.webp', 'Women Footwear', '#1E293B', '#334155', '👠', 600, 600);
 
-        // Generate for all products
+        // Generate for all products (4 angles each for image gallery with zoom)
         $products = Product::all();
         $colors = [
             ['#881337', '#BE123C'],
@@ -50,12 +50,33 @@ class GenerateStorefrontAssets extends Command
 
         foreach ($products as $idx => $product) {
             $theme = $colors[$idx % count($colors)];
-            $path = "public/products/{$product->slug}-main.webp";
-            @mkdir(dirname(base_path($path)), 0777, true);
-            $this->generateSquareAsset($path, $product->name, $theme[0], $theme[1], '👠', 600, 600);
+            $angles = [
+                ['suffix' => 'main', 'label' => 'Profile View', 'sub' => 'HANDCRAFTED PROFILE', 'is_primary' => true, 'order' => 0],
+                ['suffix' => 'cushion', 'label' => 'Cloud Foam Insole', 'sub' => 'ORTHOPEDIC ARCH CUSHION', 'is_primary' => false, 'order' => 1],
+                ['suffix' => 'sole', 'label' => 'Anti-Slip Outsole', 'sub' => 'DURABLE RUBBER GRIP', 'is_primary' => false, 'order' => 2],
+                ['suffix' => 'box', 'label' => 'Luxury Unboxing', 'sub' => 'GOLD FOILED SHOE BOX', 'is_primary' => false, 'order' => 3],
+            ];
+
+            foreach ($angles as $ang) {
+                $path = "public/products/{$product->slug}-{$ang['suffix']}.webp";
+                @mkdir(dirname(base_path($path)), 0777, true);
+                $this->generateSquareAsset($path, $product->name, $theme[0], $theme[1], '👠', 600, 600, $ang['sub']);
+
+                \App\Models\ProductImage::updateOrCreate(
+                    [
+                        'product_id' => $product->id,
+                        'sort_order' => $ang['order'],
+                    ],
+                    [
+                        'image_path' => "products/{$product->slug}-{$ang['suffix']}.webp",
+                        'alt_text' => "{$product->name} - {$ang['label']}",
+                        'is_primary' => $ang['is_primary'],
+                    ]
+                );
+            }
         }
 
-        $this->info('Storefront assets successfully generated in WebP format!');
+        $this->info('Storefront assets successfully generated in WebP format with multi-angle gallery!');
         return self::SUCCESS;
     }
 
@@ -121,7 +142,7 @@ class GenerateStorefrontAssets extends Command
         imagedestroy($img);
     }
 
-    private function generateSquareAsset(string $outputPath, string $title, string $colorStart, string $colorEnd, string $icon, int $w, int $h): void
+    private function generateSquareAsset(string $outputPath, string $title, string $colorStart, string $colorEnd, string $icon, int $w, int $h, string $sub = 'CUSHIONED LUXURY'): void
     {
         $img = imagecreatetruecolor($w, $h);
         imagesavealpha($img, true);
@@ -155,8 +176,6 @@ class GenerateStorefrontAssets extends Command
         $shortTitle = strlen($title) > 28 ? substr($title, 0, 26) . '...' : $title;
         $titleX = max(20, (int) (($w - (strlen($shortTitle) * 9)) / 2));
         imagestring($img, 5, $titleX, (int) ($h * 0.45), $shortTitle, $white);
-        
-        $sub = 'CUSHIONED LUXURY';
         $subX = (int) (($w - (strlen($sub) * 9)) / 2);
         imagestring($img, 4, $subX, (int) ($h * 0.52), $sub, $gold);
 
