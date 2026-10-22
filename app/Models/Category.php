@@ -13,6 +13,8 @@ class Category extends Model
 {
     use HasFactory, SoftDeletes;
 
+    public const NAV_CACHE_KEY = 'storefront_nav_categories';
+
     protected $fillable = [
         'parent_id',
         'name',
@@ -29,6 +31,34 @@ class Category extends Model
             'is_active' => 'boolean',
             'sort_order' => 'integer',
         ];
+    }
+
+    /**
+     * Retrieve root categories with children and counts from cache.
+     */
+    public static function getCachedNavHierarchy()
+    {
+        return \Illuminate\Support\Facades\Cache::remember(self::NAV_CACHE_KEY, 86400, function () {
+            return static::roots()
+                ->active()
+                ->with(['children' => fn ($q) => $q->active()])
+                ->withCount(['products' => fn ($q) => $q->active()])
+                ->orderBy('sort_order')
+                ->get();
+        });
+    }
+
+    protected static function booted(): void
+    {
+        static::saved(function () {
+            \Illuminate\Support\Facades\Cache::forget(self::NAV_CACHE_KEY);
+            \Illuminate\Support\Facades\Cache::forget('storefront_home_data');
+        });
+
+        static::deleted(function () {
+            \Illuminate\Support\Facades\Cache::forget(self::NAV_CACHE_KEY);
+            \Illuminate\Support\Facades\Cache::forget('storefront_home_data');
+        });
     }
 
     public function parent(): BelongsTo

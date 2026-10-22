@@ -65,7 +65,43 @@ class Setting extends Model
         );
 
         Cache::forget("setting.{$key}");
+        Cache::forget('settings_all_group');
+        Cache::forget('storefront_home_data');
 
         return $setting;
+    }
+
+    /**
+     * Retrieve all settings grouped by key from cache.
+     */
+    public static function getAllCached(): array
+    {
+        return Cache::remember('settings_all_group', 3600, function () {
+            return static::all()->mapWithKeys(function ($setting) {
+                $val = match ($setting->type) {
+                    'integer' => (int) $setting->value,
+                    'decimal', 'float' => (float) $setting->value,
+                    'boolean' => filter_var($setting->value, FILTER_VALIDATE_BOOLEAN),
+                    'json' => json_decode($setting->value, true),
+                    default => $setting->value,
+                };
+                return [$setting->key => $val];
+            })->toArray();
+        });
+    }
+
+    protected static function booted(): void
+    {
+        static::saved(function (Setting $setting) {
+            Cache::forget("setting.{$setting->key}");
+            Cache::forget('settings_all_group');
+            Cache::forget('storefront_home_data');
+        });
+
+        static::deleted(function (Setting $setting) {
+            Cache::forget("setting.{$setting->key}");
+            Cache::forget('settings_all_group');
+            Cache::forget('storefront_home_data');
+        });
     }
 }

@@ -196,7 +196,7 @@ class AccountDashboard extends Component
             'selectedOrderItemId' => ['required', 'exists:order_items,id'],
             'exchange_reason' => ['required', 'string', 'min:3', 'max:255'],
             'exchange_notes' => ['nullable', 'string', 'max:1000'],
-            'exchange_photo' => ['nullable', 'image', 'max:5120'], // 5MB max
+            'exchange_photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'], // 5MB max
         ]);
 
         $user = Auth::user();

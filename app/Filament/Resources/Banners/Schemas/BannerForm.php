@@ -49,6 +49,8 @@ class BannerForm
                         FileUpload::make('image_path')
                             ->label('Hero Shoe Visual (WebP / PNG)')
                             ->image()
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                            ->maxSize(5120)
                             ->directory('banners')
                             ->visibility('public'),
                         Select::make('bg_gradient')

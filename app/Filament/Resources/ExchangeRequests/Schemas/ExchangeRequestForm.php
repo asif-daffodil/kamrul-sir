@@ -41,6 +41,8 @@ class ExchangeRequestForm
                         FileUpload::make('photo_path')
                             ->label('Uploaded Footwear Inspection Photo')
                             ->image()
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                            ->maxSize(5120)
                             ->disk('public')
                             ->directory('exchange-photos')
                             ->openable()

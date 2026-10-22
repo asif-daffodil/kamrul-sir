@@ -12,15 +12,20 @@ Route::get('/products', [CategoryController::class, 'index'])->name('products.in
 Route::get('/category/{slug}', [CategoryController::class, 'show'])->name('category.show');
 Route::get('/product/{slug}', [ProductDetailsController::class, 'show'])->name('product.show');
 Route::get('/cart', \App\Livewire\Cart\CartPage::class)->name('cart.index');
-Route::get('/checkout', \App\Livewire\Checkout\CheckoutPage::class)->name('checkout.index');
+Route::get('/checkout', \App\Livewire\Checkout\CheckoutPage::class)->name('checkout.index')->middleware('throttle:checkout');
 Route::get('/order-success/{orderNumber}', \App\Livewire\Checkout\OrderSuccessPage::class)->name('checkout.success');
 
+// SEO & Health Checks
+Route::get('/sitemap.xml', [\App\Http\Controllers\Seo\SitemapController::class, 'index'])->name('seo.sitemap');
+Route::get('/robots.txt', [\App\Http\Controllers\Seo\RobotsController::class, 'index'])->name('seo.robots');
+Route::get('/health', \App\Http\Controllers\HealthCheckController::class)->name('health.check');
+
 // Order Tracking (Public)
-Route::get('/track-order', \App\Livewire\Storefront\TrackOrderPage::class)->name('track-order');
+Route::get('/track-order', \App\Livewire\Storefront\TrackOrderPage::class)->name('track-order')->middleware('throttle:tracking');
 
 // Customer Authentication (Guest)
 Route::middleware('guest')->group(function () {
-    Route::get('/login', \App\Livewire\Auth\LoginPage::class)->name('login');
+    Route::get('/login', \App\Livewire\Auth\LoginPage::class)->name('login')->middleware('throttle:login');
     Route::get('/register', \App\Livewire\Auth\RegisterPage::class)->name('register');
 });
 
@@ -38,7 +43,7 @@ Route::middleware('auth')->prefix('account')->group(function () {
     Route::get('/orders/{orderNumber}', \App\Livewire\Account\OrderDetailPage::class)->name('account.order.show');
 });
 
-Route::get('/api/search', [StorefrontController::class, 'search'])->name('storefront.search');
+Route::get('/api/search', [StorefrontController::class, 'search'])->name('storefront.search')->middleware('throttle:api-search');
 Route::get('/api/cart/count', [StorefrontController::class, 'cartCount'])->name('storefront.cart.count');
 Route::post('/api/cart/quick-add', [StorefrontController::class, 'quickAddToCart'])->name('storefront.cart.quick-add');
 

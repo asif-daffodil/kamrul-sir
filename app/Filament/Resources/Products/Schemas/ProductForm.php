@@ -71,6 +71,8 @@ class ProductForm
                                 FileUpload::make('image_path')
                                     ->label('Image File')
                                     ->image()
+                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                    ->maxSize(5120)
                                     ->directory('products')
                                     ->imageResizeMode('cover')
                                     ->imageCropAspectRatio('1:1')

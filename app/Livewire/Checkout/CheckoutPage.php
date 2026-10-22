@@ -132,10 +132,19 @@ class CheckoutPage extends Component
 
     public function placeOrder(OrderService $orderService, CartService $cartService)
     {
-        // 1. Prevent Double Submission
+        // 1. Prevent Double Submission & Rate Limit
         if ($this->isSubmitting) {
             return null;
         }
+
+        $throttleKey = 'checkout_order|' . request()->ip();
+        if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($throttleKey, 10)) {
+            $seconds = \Illuminate\Support\Facades\RateLimiter::availableIn($throttleKey);
+            $this->submissionError = "Too many checkout requests. Please wait {$seconds} seconds before trying again.";
+            return null;
+        }
+        \Illuminate\Support\Facades\RateLimiter::hit($throttleKey, 60);
+
         $this->isSubmitting = true;
         $this->submissionError = null;
 

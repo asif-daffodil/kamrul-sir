@@ -101,7 +101,7 @@ class CategoryAndProductPageTest extends TestCase
         $response->assertSee('"@type": "BreadcrumbList"', false);
 
         // Open Graph Meta tags
-        $response->assertSee('<meta property="og:type" content="website">', false);
+        $response->assertSee('<meta property="og:type" content="product">', false);
     }
 
     /**

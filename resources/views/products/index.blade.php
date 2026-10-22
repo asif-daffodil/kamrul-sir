@@ -6,6 +6,7 @@
 @section('og_title', 'All Women\'s Footwear Collection')
 @section('og_description', 'Browse handcrafted women\'s footwear in Bangladesh with cloud-cushioned footbeds and 7-day size exchange.')
 @section('og_image', asset('images/banners/hero-heels.webp'))
+@section('canonical_url', route('products.index'))
 
 @section('content')
     <livewire:product-listing />

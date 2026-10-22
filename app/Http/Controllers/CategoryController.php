@@ -18,7 +18,7 @@ class CategoryController extends Controller
      */
     public function index(): View
     {
-        $categories = Category::roots()->active()->with('children')->get();
+        $categories = Category::getCachedNavHierarchy();
         $storeSettings = $this->getStoreSettings();
         $cartCount = $this->cartService->getItemCount();
 
@@ -30,12 +30,14 @@ class CategoryController extends Controller
      */
     public function show(string $slug): View
     {
-        $category = Category::where('slug', $slug)
-            ->active()
-            ->with(['children', 'parent'])
-            ->firstOrFail();
+        $category = \Illuminate\Support\Facades\Cache::remember("category_model_{$slug}", 1800, function () use ($slug) {
+            return Category::where('slug', $slug)
+                ->active()
+                ->with(['children', 'parent'])
+                ->firstOrFail();
+        });
 
-        $categories = Category::roots()->active()->with('children')->get();
+        $categories = Category::getCachedNavHierarchy();
         $storeSettings = $this->getStoreSettings();
         $cartCount = $this->cartService->getItemCount();
 

@@ -28,16 +28,10 @@ class AppServiceProvider extends ServiceProvider
     {
         Model::preventLazyLoading(! app()->isProduction());
 
-        // Ensure navigation categories are always available to storefront layout
+        // Ensure navigation categories are always available to storefront layout (cached)
         \Illuminate\Support\Facades\View::composer('layouts.storefront', function ($view) {
             if (! isset($view->categories)) {
-                $categories = \App\Models\Category::roots()
-                    ->active()
-                    ->with(['children' => fn ($q) => $q->active()])
-                    ->withCount(['products' => fn ($q) => $q->active()])
-                    ->orderBy('sort_order')
-                    ->get();
-                $view->with('categories', $categories);
+                $view->with('categories', \App\Models\Category::getCachedNavHierarchy());
             }
         });
 
@@ -50,5 +44,22 @@ class AppServiceProvider extends ServiceProvider
         // Explicit Policy Registrations
         \Illuminate\Support\Facades\Gate::policy(\App\Models\Order::class, \App\Policies\OrderPolicy::class);
         \Illuminate\Support\Facades\Gate::policy(\App\Models\ExchangeRequest::class, \App\Policies\ExchangeRequestPolicy::class);
+
+        // Security Rate Limiters
+        \Illuminate\Support\Facades\RateLimiter::for('login', function (\Illuminate\Http\Request $request) {
+            return \Illuminate\Cache\RateLimiting\Limit::perMinute(5)->by($request->ip());
+        });
+
+        \Illuminate\Support\Facades\RateLimiter::for('checkout', function (\Illuminate\Http\Request $request) {
+            return \Illuminate\Cache\RateLimiting\Limit::perMinute(10)->by($request->ip());
+        });
+
+        \Illuminate\Support\Facades\RateLimiter::for('tracking', function (\Illuminate\Http\Request $request) {
+            return \Illuminate\Cache\RateLimiting\Limit::perMinute(20)->by($request->ip());
+        });
+
+        \Illuminate\Support\Facades\RateLimiter::for('api-search', function (\Illuminate\Http\Request $request) {
+            return \Illuminate\Cache\RateLimiting\Limit::perMinute(60)->by($request->ip());
+        });
     }
 }

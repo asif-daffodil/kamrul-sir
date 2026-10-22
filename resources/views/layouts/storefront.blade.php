@@ -7,12 +7,24 @@
 
     <title>@yield('title', ($storeSettings['shop_name'] ?? '[BRAND_NAME]') . ' | Premium Handcrafted Women\'s Footwear Bangladesh')</title>
     <meta name="description" content="@yield('meta_description', 'Discover handcrafted women\'s footwear in Bangladesh: elegant block heels, cushioned daily flats, braided slides, modern mules, Boston clogs & festive Kolhapuri chappals. Cash on Delivery across all 64 districts.')">
+    <meta name="robots" content="@yield('meta_robots', 'index, follow, max-image-preview:large')">
+    <link rel="canonical" href="@yield('canonical_url', url()->current())">
 
-    <!-- OpenGraph / Social Meta -->
-    <meta property="og:type" content="website">
+    <!-- OpenGraph / Facebook Meta -->
+    <meta property="og:type" content="@yield('og_type', 'website')">
+    <meta property="og:site_name" content="{{ $storeSettings['shop_name'] ?? '[BRAND_NAME]' }}">
+    <meta property="og:url" content="@yield('canonical_url', url()->current())">
     <meta property="og:title" content="@yield('og_title', ($storeSettings['shop_name'] ?? '[BRAND_NAME]') . ' Footwear Bangladesh')">
     <meta property="og:description" content="@yield('og_description', 'Handcrafted elegance engineered for cloud-walking comfort in Dhaka & beyond.')">
-    <meta property="og:image" content="{{ asset('images/banners/hero-heels.webp') }}">
+    <meta property="og:image" content="@yield('og_image', asset('images/banners/hero-heels.webp'))">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('og_title', ($storeSettings['shop_name'] ?? '[BRAND_NAME]') . ' Footwear Bangladesh')">
+    <meta name="twitter:description" content="@yield('og_description', 'Handcrafted elegance engineered for cloud-walking comfort in Dhaka & beyond.')">
+    <meta name="twitter:image" content="@yield('og_image', asset('images/banners/hero-heels.webp'))">
+
     <meta name="theme-color" content="#881337">
 
     <!-- Fonts -->

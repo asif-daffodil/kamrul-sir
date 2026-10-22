@@ -1,6 +1,7 @@
 @extends('layouts.storefront')
 
 @section('title', ($storeSettings['shop_name'] ?? '[BRAND_NAME]') . ' | Handcrafted Women\'s Footwear Bangladesh')
+@section('canonical_url', route('home'))
 
 @section('content')
 

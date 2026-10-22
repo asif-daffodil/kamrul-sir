@@ -30,24 +30,31 @@ class ProductDetailsController extends Controller
             ])
             ->firstOrFail();
 
-        // 4 Related products from the same category
-        $relatedProducts = Product::where('category_id', $product->category_id)
-            ->where('id', '!=', $product->id)
-            ->active()
-            ->with(['primaryImage', 'variants', 'approvedReviews', 'category'])
-            ->take(4)
-            ->get();
+        // 4 Related products from the same category (cached)
+        $relatedProducts = \Illuminate\Support\Facades\Cache::remember(
+            "related_products_{$product->category_id}_{$product->id}",
+            1800,
+            function () use ($product) {
+                $related = Product::where('category_id', $product->category_id)
+                    ->where('id', '!=', $product->id)
+                    ->active()
+                    ->with(['primaryImage', 'variants', 'approvedReviews', 'category'])
+                    ->take(4)
+                    ->get();
 
-        // If not enough related in same category, supplement with featured
-        if ($relatedProducts->count() < 4) {
-            $extra = Product::where('id', '!=', $product->id)
-                ->active()
-                ->whereNotIn('id', $relatedProducts->pluck('id'))
-                ->with(['primaryImage', 'variants', 'approvedReviews', 'category'])
-                ->take(4 - $relatedProducts->count())
-                ->get();
-            $relatedProducts = $relatedProducts->concat($extra);
-        }
+                if ($related->count() < 4) {
+                    $extra = Product::where('id', '!=', $product->id)
+                        ->active()
+                        ->whereNotIn('id', $related->pluck('id'))
+                        ->with(['primaryImage', 'variants', 'approvedReviews', 'category'])
+                        ->take(4 - $related->count())
+                        ->get();
+                    $related = $related->concat($extra);
+                }
+
+                return $related;
+            }
+        );
 
         // Store Settings for delivery and contact
         $storeSettings = [
@@ -169,7 +176,7 @@ class ProductDetailsController extends Controller
             'itemListElement' => $breadcrumbItems,
         ];
 
-        $categories = \App\Models\Category::roots()->active()->with('children')->get();
+        $categories = \App\Models\Category::getCachedNavHierarchy();
         $cartCount = $this->cartService->getItemCount();
 
         return view('products.show', compact(

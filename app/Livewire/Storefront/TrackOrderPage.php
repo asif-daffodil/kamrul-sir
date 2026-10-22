@@ -56,6 +56,14 @@ class TrackOrderPage extends Component
 
         $this->validate();
 
+        $throttleKey = 'track_order|' . request()->ip();
+        if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($throttleKey, 20)) {
+            $seconds = \Illuminate\Support\Facades\RateLimiter::availableIn($throttleKey);
+            $this->errorMessage = "Too many tracking lookups. Please wait {$seconds} seconds before trying again.";
+            return;
+        }
+        \Illuminate\Support\Facades\RateLimiter::hit($throttleKey, 60);
+
         $normalizedPhone = BangladeshLocations::normalizePhone($this->phone);
         $cleanOrderNumber = trim(strtoupper($this->orderNumber));
 

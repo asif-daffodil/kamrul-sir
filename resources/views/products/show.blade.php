@@ -3,9 +3,11 @@
 @section('title', ($product->meta_title ?? $product->name) . ' | ' . ($storeSettings['shop_name'] ?? '[BRAND_NAME]'))
 @section('meta_description', $product->meta_description ?? $product->short_description ?? ('Buy handcrafted ' . $product->name . ' for women in Bangladesh. Cloud cushion footbed with Cash on Delivery and 7 Days Exchange.'))
 
-@section('og_title', $product->name . ' | [BRAND_NAME] Handcrafted Footwear')
+@section('og_title', $product->name . ' | ' . ($storeSettings['shop_name'] ?? '[BRAND_NAME]') . ' Handcrafted Footwear')
 @section('og_description', $product->short_description ?? 'Handcrafted women footwear with cloud-cushioned comfort in Bangladesh.')
 @section('og_image', $product->image_url)
+@section('og_type', 'product')
+@section('canonical_url', route('product.show', $product->slug))
 
 @section('content')
 
