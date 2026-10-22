@@ -167,11 +167,45 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     </button>
 
-                    <!-- Outlets Quick Link (Desktop) -->
-                    <a href="#outlets" class="hidden lg:flex items-center gap-1.5 text-xs font-semibold text-slate-700 hover:text-rose-900 px-3 py-2 rounded-lg hover:bg-stone-100 transition">
-                        <svg class="w-4 h-4 text-rose-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                        <span>6 Outlets</span>
+                    <!-- Track Order Link -->
+                    <a href="{{ route('track-order') }}" class="hidden md:inline-flex items-center gap-1 text-xs font-semibold text-slate-700 hover:text-rose-900 px-2.5 py-1.5 rounded-lg hover:bg-stone-100 transition">
+                        <span>🚚</span>
+                        <span>Track Order</span>
                     </a>
+
+                    <!-- Customer Account / Auth Link -->
+                    @auth
+                        <div class="relative group" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
+                            <a href="{{ route('account.dashboard') }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-rose-950 bg-rose-50 hover:bg-rose-100 px-3 py-1.5 rounded-full transition">
+                                <span>👤</span>
+                                <span class="max-w-[100px] truncate">{{ Auth::user()->name }}</span>
+                                <svg class="w-3 h-3 text-rose-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </a>
+                            <div x-show="open" x-cloak class="absolute right-0 top-full pt-1.5 w-44 z-50">
+                                <div class="bg-white rounded-2xl shadow-xl border border-stone-200 p-2 space-y-1 text-xs">
+                                    <a href="{{ route('account.dashboard') }}" class="block px-3 py-2 rounded-xl text-slate-700 hover:bg-rose-50 hover:text-rose-950 font-semibold">
+                                        Dashboard
+                                    </a>
+                                    <a href="{{ route('account.dashboard', ['tab' => 'orders']) }}" class="block px-3 py-2 rounded-xl text-slate-700 hover:bg-rose-50 hover:text-rose-950 font-semibold">
+                                        My Orders
+                                    </a>
+                                    <a href="{{ route('account.dashboard', ['tab' => 'exchanges']) }}" class="block px-3 py-2 rounded-xl text-slate-700 hover:bg-rose-50 hover:text-rose-950 font-semibold">
+                                        Size Exchanges
+                                    </a>
+                                    <form method="POST" action="{{ route('logout') }}" class="pt-1 border-t border-stone-100">
+                                        @csrf
+                                        <button type="submit" class="w-full text-left px-3 py-2 rounded-xl text-rose-600 hover:bg-rose-50 font-bold cursor-pointer">
+                                            Sign Out
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        <a href="{{ route('login') }}" class="inline-flex items-center gap-1 text-xs font-bold text-slate-700 hover:text-rose-900 px-2.5 py-1.5 rounded-lg hover:bg-stone-100 transition">
+                            <span>Sign In</span>
+                        </a>
+                    @endauth
 
                     <!-- Admin Portal Shortcut -->
                     <a href="/admin" class="hidden sm:inline-flex items-center text-xs font-semibold text-slate-500 hover:text-slate-800 px-2.5 py-1.5 rounded-md hover:bg-stone-100 transition" title="Staff / Admin Sign In">
@@ -373,7 +407,30 @@
                 @endforeach
 
                 <div class="pt-4 mt-4 border-t border-stone-200 space-y-2">
-                    <p class="text-[11px] font-bold text-stone-400 uppercase tracking-wider px-3">Help & Quick Links</p>
+                    <p class="text-[11px] font-bold text-stone-400 uppercase tracking-wider px-3">Customer Account & Services</p>
+                    <a href="{{ route('track-order') }}" class="flex items-center gap-2.5 py-2 px-3 rounded-lg text-sm text-slate-700 hover:bg-stone-50" @click="mobileMenuOpen = false">
+                        <span class="text-base">🚚</span>
+                        <span>Track My Order</span>
+                    </a>
+                    @auth
+                        <a href="{{ route('account.dashboard') }}" class="flex items-center gap-2.5 py-2 px-3 rounded-lg text-sm font-bold text-rose-950 bg-rose-50" @click="mobileMenuOpen = false">
+                            <span class="text-base">👤</span>
+                            <span>My Account ({{ Auth::user()->name }})</span>
+                        </a>
+                        <form method="POST" action="{{ route('logout') }}" class="px-3 pt-1">
+                            @csrf
+                            <button type="submit" class="text-xs font-bold text-rose-600 hover:underline">
+                                Sign Out
+                            </button>
+                        </form>
+                    @else
+                        <a href="{{ route('login') }}" class="flex items-center gap-2.5 py-2 px-3 rounded-lg text-sm font-bold text-rose-900 bg-rose-50" @click="mobileMenuOpen = false">
+                            <span class="text-base">🔑</span>
+                            <span>Sign In / Create Account</span>
+                        </a>
+                    @endauth
+
+                    <p class="text-[11px] font-bold text-stone-400 uppercase tracking-wider px-3 pt-2">Help & Quick Links</p>
                     <a href="#outlets" class="flex items-center gap-2.5 py-2 px-3 rounded-lg text-sm text-slate-700 hover:bg-stone-50" @click="mobileMenuOpen = false">
                         <svg class="w-4 h-4 text-rose-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                         <span>Store Outlets (6 Locations)</span>

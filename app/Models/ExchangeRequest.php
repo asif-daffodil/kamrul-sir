@@ -18,8 +18,22 @@ class ExchangeRequest extends Model
         'reason',
         'status',
         'customer_notes',
+        'photo_path',
         'admin_notes',
     ];
+
+    public function getPhotoUrlAttribute(): ?string
+    {
+        if (! $this->photo_path) {
+            return null;
+        }
+
+        if (str_starts_with($this->photo_path, 'http://') || str_starts_with($this->photo_path, 'https://')) {
+            return $this->photo_path;
+        }
+
+        return asset('storage/' . ltrim($this->photo_path, '/'));
+    }
 
     public function order(): BelongsTo
     {

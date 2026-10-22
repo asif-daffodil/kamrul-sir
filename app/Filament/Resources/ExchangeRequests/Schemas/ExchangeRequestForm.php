@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\ExchangeRequests\Schemas;
 
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -37,6 +38,13 @@ class ExchangeRequestForm
                                 'completed' => 'Completed / Replacement Sent',
                             ])
                             ->required(),
+                        FileUpload::make('photo_path')
+                            ->label('Uploaded Footwear Inspection Photo')
+                            ->image()
+                            ->disk('public')
+                            ->directory('exchange-photos')
+                            ->openable()
+                            ->downloadable(),
                         Textarea::make('customer_notes')
                             ->label('Customer Remarks')
                             ->rows(3),

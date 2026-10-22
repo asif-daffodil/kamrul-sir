@@ -40,5 +40,9 @@ class AppServiceProvider extends ServiceProvider
             \Illuminate\Auth\Events\Login::class,
             \App\Listeners\MergeGuestCartOnLogin::class
         );
+
+        // Explicit Policy Registrations
+        \Illuminate\Support\Facades\Gate::policy(\App\Models\Order::class, \App\Policies\OrderPolicy::class);
+        \Illuminate\Support\Facades\Gate::policy(\App\Models\ExchangeRequest::class, \App\Policies\ExchangeRequestPolicy::class);
     }
 }

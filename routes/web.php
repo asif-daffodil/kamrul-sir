@@ -15,6 +15,29 @@ Route::get('/cart', \App\Livewire\Cart\CartPage::class)->name('cart.index');
 Route::get('/checkout', \App\Livewire\Checkout\CheckoutPage::class)->name('checkout.index');
 Route::get('/order-success/{orderNumber}', \App\Livewire\Checkout\OrderSuccessPage::class)->name('checkout.success');
 
+// Order Tracking (Public)
+Route::get('/track-order', \App\Livewire\Storefront\TrackOrderPage::class)->name('track-order');
+
+// Customer Authentication (Guest)
+Route::middleware('guest')->group(function () {
+    Route::get('/login', \App\Livewire\Auth\LoginPage::class)->name('login');
+    Route::get('/register', \App\Livewire\Auth\RegisterPage::class)->name('register');
+});
+
+// Logout
+Route::post('/logout', function () {
+    \Illuminate\Support\Facades\Auth::logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    return redirect()->route('home');
+})->name('logout')->middleware('auth');
+
+// Customer Account Portal (Auth)
+Route::middleware('auth')->prefix('account')->group(function () {
+    Route::get('/', \App\Livewire\Account\AccountDashboard::class)->name('account.dashboard');
+    Route::get('/orders/{orderNumber}', \App\Livewire\Account\OrderDetailPage::class)->name('account.order.show');
+});
+
 Route::get('/api/search', [StorefrontController::class, 'search'])->name('storefront.search');
 Route::get('/api/cart/count', [StorefrontController::class, 'cartCount'])->name('storefront.cart.count');
 Route::post('/api/cart/quick-add', [StorefrontController::class, 'quickAddToCart'])->name('storefront.cart.quick-add');
