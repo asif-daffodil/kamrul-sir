@@ -8,7 +8,7 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 #[Layout('layouts.storefront')]
-#[Title('Shopping Bag | [BRAND_NAME] Handcrafted Footwear Bangladesh')]
+#[Title('Shopping Bag | Heel Bari Handcrafted Footwear Bangladesh')]
 class CartPage extends Component
 {
     public string $deliveryZone = 'inside_dhaka';

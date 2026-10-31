@@ -1,9 +1,9 @@
 @extends('layouts.storefront')
 
-@section('title', ($product->meta_title ?? $product->name) . ' | ' . ($storeSettings['shop_name'] ?? '[BRAND_NAME]'))
+@section('title', ($product->meta_title ?? $product->name) . ' | ' . ($storeSettings['shop_name'] ?? 'Heel Bari'))
 @section('meta_description', $product->meta_description ?? $product->short_description ?? ('Buy handcrafted ' . $product->name . ' for women in Bangladesh. Cloud cushion footbed with Cash on Delivery and 7 Days Exchange.'))
 
-@section('og_title', $product->name . ' | ' . ($storeSettings['shop_name'] ?? '[BRAND_NAME]') . ' Handcrafted Footwear')
+@section('og_title', $product->name . ' | ' . ($storeSettings['shop_name'] ?? 'Heel Bari') . ' Handcrafted Footwear')
 @section('og_description', $product->short_description ?? 'Handcrafted women footwear with cloud-cushioned comfort in Bangladesh.')
 @section('og_image', $product->image_url)
 @section('og_type', 'product')
@@ -343,7 +343,7 @@
                                 type="button"
                                 @click="selectSize('{{ $sz }}')"
                                 :disabled="!isSizeAvailable('{{ $sz }}')"
-                                class="h-12 rounded-xl text-xs font-mono font-bold flex flex-col items-center justify-center transition border relative"
+                                class="h-12 rounded-xl text-xs font-mono font-bold flex flex-col items-center justify-center transition border relative cursor-pointer"
                                 :class="{
                                     'bg-rose-950 text-white border-rose-950 shadow-md': selectedSize === '{{ $sz }}' && isSizeAvailable('{{ $sz }}'),
                                     'bg-white text-slate-800 border-stone-200 hover:border-rose-800': selectedSize !== '{{ $sz }}' && isSizeAvailable('{{ $sz }}'),
@@ -355,6 +355,15 @@
                             </button>
                         @endforeach
                     </div>
+
+                    <!-- Size Tip & Fit Advice -->
+                    <div class="p-3 rounded-2xl bg-amber-50/80 border border-amber-200/70 text-xs text-amber-950 flex items-start gap-2.5 mt-2">
+                        <span class="text-base text-amber-700 shrink-0">💡</span>
+                        <div>
+                            <p class="font-bold">Size Tip & Fit Advice:</p>
+                            <p class="text-[11px] text-stone-600 mt-0.5">True to European (EU) standard fit. For broader feet or high instep, we recommend choosing <strong>1 size up</strong> for optimal cloud foam comfort.</p>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- QUANTITY & ADD TO BAG ACTIONS -->
@@ -364,7 +373,7 @@
                         <div class="flex items-center border border-stone-300 rounded-2xl bg-white shadow-2xs h-14 px-2">
                             <button
                                 type="button"
-                                class="w-9 h-9 text-slate-600 hover:text-rose-950 font-bold text-lg disabled:opacity-30"
+                                class="w-9 h-9 text-slate-600 hover:text-rose-950 font-bold text-lg disabled:opacity-30 cursor-pointer"
                                 @click="quantity = Math.max(1, quantity - 1)"
                                 :disabled="quantity <= 1"
                                 aria-label="Decrease quantity"
@@ -372,7 +381,7 @@
                             <span class="w-10 text-center font-bold text-sm text-slate-900" x-text="quantity">1</span>
                             <button
                                 type="button"
-                                class="w-9 h-9 text-slate-600 hover:text-rose-950 font-bold text-lg disabled:opacity-30"
+                                class="w-9 h-9 text-slate-600 hover:text-rose-950 font-bold text-lg disabled:opacity-30 cursor-pointer"
                                 @click="quantity = Math.min(currentVariant?.stock || 10, quantity + 1)"
                                 :disabled="currentVariant && quantity >= currentVariant.stock"
                                 aria-label="Increase quantity"
@@ -381,10 +390,11 @@
 
                         <!-- Add to Bag Primary Button -->
                         <button
+                            id="main-buy-button"
                             type="button"
                             @click="addToCart()"
                             :disabled="isAdding || !currentVariant || currentVariant.stock === 0"
-                            class="flex-1 h-14 rounded-2xl bg-rose-900 hover:bg-rose-800 text-white font-extrabold text-sm sm:text-base tracking-wider uppercase shadow-xl hover:shadow-rose-900/30 transition-all flex items-center justify-center gap-2.5 disabled:opacity-50 disabled:cursor-not-allowed active:scale-98"
+                            class="flex-1 h-14 rounded-2xl bg-rose-900 hover:bg-rose-800 text-white font-extrabold text-sm sm:text-base tracking-wider uppercase shadow-xl hover:shadow-rose-900/30 transition-all flex items-center justify-center gap-2.5 disabled:opacity-50 disabled:cursor-not-allowed active:scale-98 cursor-pointer"
                         >
                             <span x-show="!isAdding">🛍️ Add to Shopping Bag</span>
                             <span x-show="isAdding" class="flex items-center gap-2">
@@ -395,7 +405,7 @@
 
                     <!-- Direct WhatsApp Order Button -->
                     <a
-                        :href="`https://wa.me/{{ preg_replace('/[^0-9]/', '', $storeSettings['whatsapp_number'] ?? '+8801700000000') }}?text=${encodeURIComponent('Hi [BRAND_NAME]! I want to order ' + '{{ $product->name }}' + ' (Color: ' + selectedColor + ', Size: EU ' + selectedSize + ') for BDT ' + (currentVariant ? currentVariant.effective_price : '{{ $product->effective_price }}'))}`"
+                        :href="`https://wa.me/{{ preg_replace('/[^0-9]/', '', $storeSettings['whatsapp_number'] ?? '+8801700000000') }}?text=${encodeURIComponent('Hi Heel Bari! I want to order ' + '{{ $product->name }}' + ' (Color: ' + selectedColor + ', Size: EU ' + selectedSize + ') for BDT ' + (currentVariant ? currentVariant.effective_price : '{{ $product->effective_price }}'))}`"
                         target="_blank"
                         rel="noopener"
                         class="w-full h-12 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition shadow-sm"
@@ -544,9 +554,13 @@
                         <div class="p-5 rounded-2xl bg-white border border-stone-200 shadow-2xs space-y-3">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-2.5">
-                                    <div class="w-8 h-8 rounded-full bg-rose-100 text-rose-800 font-bold text-xs flex items-center justify-center">
-                                        {{ substr($rev->user?->name ?? 'Shopper', 0, 1) }}
-                                    </div>
+                                    @if(!empty($rev->user?->avatar_url))
+                                        <img src="{{ $rev->user->avatar_url }}" alt="{{ $rev->user->name }}" class="w-8 h-8 rounded-full object-cover border border-amber-200">
+                                    @else
+                                        <div class="w-8 h-8 rounded-full bg-rose-100 text-rose-800 font-bold text-xs flex items-center justify-center">
+                                            {{ substr($rev->user?->name ?? 'Shopper', 0, 1) }}
+                                        </div>
+                                    @endif
                                     <div>
                                         <h4 class="text-xs font-bold text-slate-900">{{ $rev->user?->name ?? 'Verified Customer' }}</h4>
                                         <span class="text-[10px] text-emerald-700 font-medium">✓ Verified Purchase</span>
@@ -591,47 +605,55 @@
 
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                     @foreach($relatedProducts as $rel)
-                        <article class="group bg-white rounded-2xl border border-stone-200 hover:border-rose-900/40 overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between">
-                            <div class="relative aspect-square overflow-hidden bg-stone-100">
-                                <a href="{{ route('product.show', $rel->slug) }}">
-                                    <img
-                                        src="{{ $rel->image_url }}"
-                                        alt="{{ $rel->name }}"
-                                        width="600"
-                                        height="600"
-                                        loading="lazy"
-                                        class="w-full h-full object-cover group-hover:scale-106 transition-transform duration-500"
-                                    >
-                                </a>
-                                @if($rel->has_discount)
-                                    <div class="absolute top-3 left-3 bg-rose-800 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase">
-                                        -{{ $rel->discount_percentage }}%
-                                    </div>
-                                @endif
-                            </div>
-
-                            <div class="p-4 flex-1 flex flex-col justify-between">
-                                <div>
-                                    <span class="text-[10px] font-bold uppercase tracking-wider text-rose-800">{{ $rel->category?->name }}</span>
-                                    <h3 class="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-rose-900 transition-colors line-clamp-1 mt-0.5">
-                                        <a href="{{ route('product.show', $rel->slug) }}">{{ $rel->name }}</a>
-                                    </h3>
-                                </div>
-                                <div class="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between">
-                                    <span class="text-sm font-extrabold text-slate-900">৳ {{ number_format($rel->effective_price) }}</span>
-                                    <a
-                                        href="{{ route('product.show', $rel->slug) }}"
-                                        class="px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-rose-900 hover:text-white text-xs font-semibold transition"
-                                    >
-                                        View
-                                    </a>
-                                </div>
-                            </div>
-                        </article>
+                        <x-product-card :product="$rel" />
                     @endforeach
                 </div>
             </section>
         @endif
+
+        <!-- STICKY ADD TO CART ON MOBILE (Fixed at viewport bottom when scrolled past main buy box) -->
+        <div
+            class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/98 backdrop-blur-md border-t border-stone-200 px-4 py-3 shadow-2xl flex items-center justify-between gap-3 pb-[max(env(safe-area-inset-bottom),0.75rem)]"
+            x-data="{ showSticky: false }"
+            x-init="
+                const btn = document.getElementById('main-buy-button');
+                if (btn) {
+                    const observer = new IntersectionObserver(([entry]) => {
+                        showSticky = !entry.isIntersecting;
+                    }, { threshold: 0 });
+                    observer.observe(btn);
+                }
+            "
+            x-show="showSticky"
+            x-cloak
+            x-transition:enter="transform transition ease-out duration-300"
+            x-transition:enter-start="translate-y-full"
+            x-transition:enter-end="translate-y-0"
+            x-transition:leave="transform transition ease-in duration-200"
+            x-transition:leave-start="translate-y-0"
+            x-transition:leave-end="translate-y-full"
+        >
+            <div class="flex items-center gap-2.5 min-w-0">
+                <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="w-11 h-11 rounded-xl object-cover bg-stone-100 border border-stone-200 shrink-0">
+                <div class="min-w-0">
+                    <p class="text-xs font-bold text-slate-900 truncate font-serif">{{ $product->name }}</p>
+                    <div class="flex items-center gap-2 mt-0.5">
+                        <span class="text-xs font-black text-rose-950" x-text="'৳ ' + Number(currentVariant ? currentVariant.effective_price : {{ $product->effective_price }}).toLocaleString()"></span>
+                        <span class="text-[10px] text-stone-500 font-mono font-semibold bg-stone-100 px-1.5 py-0.5 rounded">EU <span x-text="selectedSize"></span></span>
+                    </div>
+                </div>
+            </div>
+
+            <button
+                type="button"
+                @click="addToCart()"
+                :disabled="isAdding || !currentVariant || currentVariant.stock === 0"
+                class="px-5 py-3 rounded-xl bg-rose-950 hover:bg-rose-900 text-white font-extrabold text-xs uppercase tracking-wider shrink-0 shadow-lg active:scale-95 disabled:opacity-50 cursor-pointer"
+            >
+                <span x-show="!isAdding">🛍️ Add to Bag</span>
+                <span x-show="isAdding">...</span>
+            </button>
+        </div>
 
         <!-- SIZE GUIDE MODAL -->
         <div

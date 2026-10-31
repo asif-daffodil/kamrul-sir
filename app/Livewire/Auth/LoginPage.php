@@ -14,7 +14,7 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 #[Layout('layouts.storefront')]
-#[Title('Customer Sign In | [BRAND_NAME] Bangladesh')]
+#[Title('Customer Sign In | Heel Bari Bangladesh')]
 class LoginPage extends Component
 {
     public string $login_id = '';
@@ -85,7 +85,7 @@ class LoginPage extends Component
     public function render()
     {
         $storeSettings = [
-            'shop_name' => Setting::get('shop_name', config('shop.brand_name', '[BRAND_NAME]')),
+            'shop_name' => Setting::get('shop_name', config('shop.brand_name', 'Heel Bari')),
             'support_phone' => Setting::get('support_phone', '+880 1700-000000'),
         ];
 

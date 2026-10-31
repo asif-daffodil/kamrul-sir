@@ -9,7 +9,7 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 #[Layout('layouts.storefront')]
-#[Title('Order Placed Successfully | [BRAND_NAME] Handcrafted Footwear')]
+#[Title('Order Placed Successfully | Heel Bari Handcrafted Footwear')]
 class OrderSuccessPage extends Component
 {
     public string $orderNumber;
@@ -26,7 +26,7 @@ class OrderSuccessPage extends Component
             ->firstOrFail();
 
         $storeSettings = [
-            'shop_name' => Setting::get('shop_name', config('shop.brand_name', '[BRAND_NAME]')),
+            'shop_name' => Setting::get('shop_name', config('shop.brand_name', 'Heel Bari')),
             'support_phone' => Setting::get('support_phone', '+880 1700-000000'),
             'support_email' => Setting::get('support_email', 'care@brandfootwear.com'),
             'whatsapp_number' => Setting::get('whatsapp_number', '+8801700000000'),

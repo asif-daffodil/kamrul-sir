@@ -1,6 +1,6 @@
 @extends('layouts.storefront')
 
-@section('title', ($category->meta_title ?? $category->name . ' Collection') . ' | ' . ($storeSettings['shop_name'] ?? '[BRAND_NAME]'))
+@section('title', ($category->meta_title ?? $category->name . ' Collection') . ' | ' . ($storeSettings['shop_name'] ?? 'Heel Bari'))
 @section('meta_description', $category->meta_description ?? $category->description ?? ('Shop ' . $category->name . ' for women in Bangladesh. Handcrafted comfort with Cash on Delivery & 7 Days Exchange.'))
 
 @section('og_title', $category->name . ' Footwear Collection')

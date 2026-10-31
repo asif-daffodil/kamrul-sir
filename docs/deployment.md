@@ -1,6 +1,6 @@
 # Production Deployment Guide (Ubuntu VPS)
 
-Comprehensive, step-by-step production deployment documentation for **[BRAND_NAME]**'s mobile-first women footwear eCommerce platform running on **Ubuntu 22.04 LTS / 24.04 LTS**, **PHP 8.3-FPM**, **Nginx**, **MySQL 8.0**, and **Redis**.
+Comprehensive, step-by-step production deployment documentation for **Heel Bari**'s mobile-first women footwear eCommerce platform running on **Ubuntu 22.04 LTS / 24.04 LTS**, **PHP 8.3-FPM**, **Nginx**, **MySQL 8.0**, and **Redis**.
 
 ---
 
@@ -562,7 +562,7 @@ Add the daily execution rule (runs at 03:00 AM Bangladesh time):
 ### 13.1 Production Environment Checklist (`/var/www/footwear-brand/shared/.env`)
 
 ```ini
-APP_NAME="[BRAND_NAME]"
+APP_NAME="Heel Bari"
 APP_ENV=production
 APP_KEY=base64:YOUR_GENERATED_APP_KEY_HERE
 APP_DEBUG=false
@@ -606,7 +606,7 @@ MAIL_USERNAME=your-mailgun-username
 MAIL_PASSWORD=your-mailgun-password
 MAIL_ENCRYPTION=tls
 MAIL_FROM_ADDRESS="care@yourbrand.com.bd"
-MAIL_FROM_NAME="[BRAND_NAME] Footwear"
+MAIL_FROM_NAME="Heel Bari Footwear"
 
 # SMS Gateway (Live Bangladeshi Gateway Driver)
 SMS_DRIVER=log # Replace with your live Bangladeshi SMS Gateway provider driver

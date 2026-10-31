@@ -72,31 +72,65 @@ class CategorySeeder extends Seeder
             ],
         ];
 
+        $imageGen = new \App\Services\PlaceholderImageGenerator();
         $order = 1;
         foreach ($categories as $cat) {
+            $slug = Str::slug($cat['name']);
+            $catRelPath = "images/categories/{$slug}.webp";
+            $catFullPath = public_path($catRelPath);
+            $catStoragePath = storage_path("app/public/categories/{$slug}.webp");
+
+            if (! file_exists($catFullPath) || filesize($catFullPath) < 20000) {
+                $imageGen->generateCategoryPlaceholder($cat['name'], $cat['description'], 800, 1000, $catFullPath);
+            }
+            if (! is_dir(dirname($catStoragePath))) {
+                mkdir(dirname($catStoragePath), 0755, true);
+            }
+            copy($catFullPath, $catStoragePath);
+
             $parent = Category::updateOrCreate(
-                ['slug' => Str::slug($cat['name'])],
+                ['slug' => $slug],
                 [
                     'name' => $cat['name'],
                     'description' => $cat['description'],
+                    'image' => "categories/{$slug}.webp",
                     'parent_id' => null,
                     'is_active' => true,
                     'sort_order' => $order++,
                 ]
             );
 
+            $parent->clearMediaCollection('categories');
+            if (file_exists($catFullPath)) {
+                $parent->addMedia($catFullPath)->preservingOriginal()->toMediaCollection('categories');
+            }
+
             $childOrder = 1;
             foreach ($cat['children'] as $childName => $childDesc) {
-                Category::updateOrCreate(
-                    ['slug' => Str::slug($childName)],
+                $childSlug = Str::slug($childName);
+                $childRelPath = "images/categories/{$childSlug}.webp";
+                $childFullPath = public_path($childRelPath);
+                $childStoragePath = storage_path("app/public/categories/{$childSlug}.webp");
+
+                $imageGen->generateCategoryPlaceholder($childName, $childDesc, 800, 1000, $childFullPath);
+                copy($childFullPath, $childStoragePath);
+
+                $child = Category::updateOrCreate(
+                    ['slug' => $childSlug],
                     [
                         'name' => $childName,
                         'description' => $childDesc,
+                        'image' => "categories/{$childSlug}.webp",
                         'parent_id' => $parent->id,
                         'is_active' => true,
                         'sort_order' => $childOrder++,
                     ]
                 );
+
+                $child->clearMediaCollection('categories');
+                if (file_exists($childFullPath)) {
+                    $child->addMedia($childFullPath)->preservingOriginal()->toMediaCollection('categories');
+                }
             }
         }
     }

@@ -54,7 +54,7 @@ class OrderConfirmationNotification extends Notification implements ShouldQueue
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $brandName = Setting::get('shop_name', config('shop.brand_name', '[BRAND_NAME]'));
+        $brandName = Setting::get('shop_name', config('shop.brand_name', 'Heel Bari'));
         $trackUrl = route('track-order', [
             'order_number' => $this->order->order_number,
             'phone' => $this->order->customer_phone,
@@ -90,7 +90,7 @@ class OrderConfirmationNotification extends Notification implements ShouldQueue
      */
     public function toSms(object $notifiable): string
     {
-        $brandName = Setting::get('shop_name', config('shop.brand_name', '[BRAND_NAME]'));
+        $brandName = Setting::get('shop_name', config('shop.brand_name', 'Heel Bari'));
         $trackUrl = route('track-order', [
             'order_number' => $this->order->order_number,
             'phone' => $this->order->customer_phone,

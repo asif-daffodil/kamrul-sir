@@ -14,7 +14,7 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 #[Layout('layouts.storefront')]
-#[Title('Create Customer Account | [BRAND_NAME] Bangladesh')]
+#[Title('Create Customer Account | Heel Bari Bangladesh')]
 class RegisterPage extends Component
 {
     public string $name = '';
@@ -83,7 +83,7 @@ class RegisterPage extends Component
     public function render()
     {
         $storeSettings = [
-            'shop_name' => Setting::get('shop_name', config('shop.brand_name', '[BRAND_NAME]')),
+            'shop_name' => Setting::get('shop_name', config('shop.brand_name', 'Heel Bari')),
             'support_phone' => Setting::get('support_phone', '+880 1700-000000'),
         ];
 

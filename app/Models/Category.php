@@ -8,10 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Category extends Model
+class Category extends Model implements HasMedia
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, InteractsWithMedia;
 
     public const NAV_CACHE_KEY = 'storefront_nav_categories';
 
@@ -86,18 +88,30 @@ class Category extends Model
         return $query->whereNull('parent_id');
     }
 
+    protected static array $resolvedAssetPaths = [];
+
     public function getImageUrlAttribute(): string
     {
+        if ($this->hasMedia('categories')) {
+            return $this->getFirstMediaUrl('categories');
+        }
+
         if (! empty($this->image)) {
-            if (str_starts_with($this->image, 'http')) {
-                return $this->image;
+            if (isset(static::$resolvedAssetPaths[$this->image])) {
+                return static::$resolvedAssetPaths[$this->image];
+            }
+
+            if (str_starts_with($this->image, 'http://') || str_starts_with($this->image, 'https://')) {
+                return static::$resolvedAssetPaths[$this->image] = $this->image;
             }
             if (file_exists(public_path($this->image))) {
-                return asset($this->image);
+                return static::$resolvedAssetPaths[$this->image] = asset($this->image);
             }
             if (file_exists(public_path('storage/' . $this->image))) {
-                return asset('storage/' . $this->image);
+                return static::$resolvedAssetPaths[$this->image] = asset('storage/' . $this->image);
             }
+
+            return static::$resolvedAssetPaths[$this->image] = asset($this->image);
         }
 
         return asset('images/categories/' . $this->slug . '.webp');

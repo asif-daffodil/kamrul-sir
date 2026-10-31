@@ -6,7 +6,7 @@ This document defines the strict architecture, coding standards, and operational
 
 ## 1. Project Overview
 
-- **Project**: Mobile-first eCommerce platform for **[BRAND_NAME]** specializing in women's footwear in Bangladesh.
+- **Project**: Mobile-first eCommerce platform for **Heel Bari** specializing in women's footwear in Bangladesh.
 - **Target Audience & Locale**: Bangladesh shoppers. Mobile-first experience is paramount (responsive layouts, touch targets, fast load times, lightweight assets).
 - **Currency**: Bangladeshi Taka (**BDT / Tk / ৳**).
 - **Core Business Domain**: Product catalogs (sizes, colors, variants), cart & checkout, localized delivery management (districts/areas), order lifecycle, and inventory tracking.

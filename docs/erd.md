@@ -1,6 +1,6 @@
 # Database Entity Relationship Diagram (ERD)
 
-This document provides the complete database schema design and entity relationships for the **[BRAND_NAME]** women's footwear eCommerce platform in Bangladesh.
+This document provides the complete database schema design and entity relationships for the **Heel Bari** women's footwear eCommerce platform in Bangladesh.
 
 ---
 

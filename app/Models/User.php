@@ -11,10 +11,12 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class User extends Authenticatable implements FilamentUser
+class User extends Authenticatable implements FilamentUser, HasMedia
 {
-    use HasFactory, Notifiable, SoftDeletes;
+    use HasFactory, Notifiable, SoftDeletes, InteractsWithMedia;
 
     /**
      * The attributes that are mass assignable.
@@ -107,5 +109,22 @@ class User extends Authenticatable implements FilamentUser
     public function exchangeRequests(): HasMany
     {
         return $this->hasMany(ExchangeRequest::class);
+    }
+
+    public function getAvatarUrlAttribute(): string
+    {
+        if ($this->hasMedia('avatars')) {
+            return $this->getFirstMediaUrl('avatars');
+        }
+
+        $slug = \Illuminate\Support\Str::slug($this->name);
+        if (file_exists(public_path("images/avatars/{$slug}.webp"))) {
+            return asset("images/avatars/{$slug}.webp");
+        }
+        if (file_exists(public_path("storage/avatars/{$slug}.webp"))) {
+            return asset("storage/avatars/{$slug}.webp");
+        }
+
+        return '';
     }
 }

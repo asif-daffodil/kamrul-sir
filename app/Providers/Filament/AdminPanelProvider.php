@@ -28,7 +28,10 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->brandName(config('shop.store.name', '[BRAND_NAME] Footwear'))
+            ->brandName('Heel Bari')
+            ->brandLogo(fn () => view('filament.components.brand-logo'))
+            ->brandLogoHeight('2.5rem')
+            ->favicon(asset('favicon.ico'))
             ->colors([
                 'primary' => Color::Rose,
                 'gray' => Color::Slate,

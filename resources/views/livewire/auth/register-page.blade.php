@@ -11,7 +11,7 @@
                 Create Account
             </h1>
             <p class="text-xs text-stone-500">
-                Join [BRAND_NAME] for faster checkout, live order tracking, and 7-day size exchanges.
+                Join Heel Bari for faster checkout, live order tracking, and 7-day size exchanges.
             </p>
         </div>
 

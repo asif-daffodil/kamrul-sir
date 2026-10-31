@@ -1,6 +1,6 @@
 @extends('layouts.storefront')
 
-@section('title', 'All Women\'s Footwear Catalog | ' . ($storeSettings['shop_name'] ?? '[BRAND_NAME]'))
+@section('title', 'All Women\'s Footwear Catalog | ' . ($storeSettings['shop_name'] ?? 'Heel Bari'))
 @section('meta_description', 'Explore all handcrafted footwear in Bangladesh: festive block heels, kitten heels, memory foam flats, suede Boston clogs, and ethnic Kolhapuris. Cash on Delivery across 64 districts.')
 
 @section('og_title', 'All Women\'s Footwear Collection')

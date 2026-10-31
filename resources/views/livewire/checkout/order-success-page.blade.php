@@ -176,7 +176,7 @@
 
             <div class="flex items-center gap-3 w-full sm:w-auto">
                 <a
-                    href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $storeSettings['whatsapp_number'] ?? '+8801700000000') }}?text={{ urlencode('Hi [BRAND_NAME]! I just placed order #' . $order->order_number . '. Can you confirm my dispatch schedule?') }}"
+                    href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $storeSettings['whatsapp_number'] ?? '+8801700000000') }}?text={{ urlencode('Hi Heel Bari! I just placed order #' . $order->order_number . '. Can you confirm my dispatch schedule?') }}"
                     target="_blank"
                     rel="noopener"
                     class="flex-1 sm:flex-none px-6 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider transition shadow-sm flex items-center justify-center gap-2"

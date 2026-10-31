@@ -12,7 +12,7 @@ use Livewire\Attributes\Url;
 use Livewire\Component;
 
 #[Layout('layouts.storefront')]
-#[Title('Track Your Footwear Order | [BRAND_NAME] Bangladesh')]
+#[Title('Track Your Footwear Order | Heel Bari Bangladesh')]
 class TrackOrderPage extends Component
 {
     #[Url(as: 'order_number')]
@@ -86,7 +86,7 @@ class TrackOrderPage extends Component
     public function render()
     {
         $storeSettings = [
-            'shop_name' => Setting::get('shop_name', config('shop.brand_name', '[BRAND_NAME]')),
+            'shop_name' => Setting::get('shop_name', config('shop.brand_name', 'Heel Bari')),
             'support_phone' => Setting::get('support_phone', '+880 1700-000000'),
             'support_email' => Setting::get('support_email', 'care@brandfootwear.com'),
             'whatsapp_number' => Setting::get('whatsapp_number', '+8801700000000'),

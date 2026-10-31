@@ -45,11 +45,50 @@ class BannerSeeder extends Seeder
             ],
         ];
 
+        $imageGen = new \App\Services\PlaceholderImageGenerator();
+
         foreach ($banners as $data) {
-            Banner::updateOrCreate(
+            $slug = \Illuminate\Support\Str::slug($data['title']);
+
+            $deskRel = "images/banners/{$slug}-desktop.webp";
+            $deskFull = public_path($deskRel);
+            $deskStorage = storage_path("app/public/banners/{$slug}-desktop.webp");
+
+            $mobRel = "images/banners/{$slug}-mobile.webp";
+            $mobFull = public_path($mobRel);
+            $mobStorage = storage_path("app/public/banners/{$slug}-mobile.webp");
+
+            // Generate desktop (1600x600) and mobile (800x900) if not present
+            if (! file_exists($deskFull) || filesize($deskFull) < 20000) {
+                $imageGen->generateBannerPlaceholder($data['title'], $data['subtitle'], $data['badge'], 1600, 600, $deskFull, false);
+            }
+            if (! file_exists($mobFull) || filesize($mobFull) < 20000) {
+                $imageGen->generateBannerPlaceholder($data['title'], $data['subtitle'], $data['badge'], 800, 900, $mobFull, true);
+            }
+
+            if (! is_dir(dirname($deskStorage))) {
+                mkdir(dirname($deskStorage), 0755, true);
+            }
+            copy($deskFull, $deskStorage);
+            copy($mobFull, $mobStorage);
+
+            $data['image_path'] = $deskRel;
+
+            $banner = Banner::updateOrCreate(
                 ['title' => $data['title']],
                 $data
             );
+
+            // Attach via Spatie MediaLibrary
+            $banner->clearMediaCollection('banners');
+            if (file_exists($deskFull)) {
+                $banner->addMedia($deskFull)->preservingOriginal()->toMediaCollection('banners');
+            }
+
+            $banner->clearMediaCollection('mobile_banners');
+            if (file_exists($mobFull)) {
+                $banner->addMedia($mobFull)->preservingOriginal()->toMediaCollection('mobile_banners');
+            }
         }
     }
 }

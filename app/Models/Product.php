@@ -181,21 +181,60 @@ class Product extends Model implements HasMedia
         return 0;
     }
 
+    protected static array $resolvedAssetPaths = [];
+
+    protected function resolveAssetPath(string $path): string
+    {
+        if (isset(static::$resolvedAssetPaths[$path])) {
+            return static::$resolvedAssetPaths[$path];
+        }
+
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return static::$resolvedAssetPaths[$path] = $path;
+        }
+
+        if (file_exists(public_path($path))) {
+            return static::$resolvedAssetPaths[$path] = asset($path);
+        }
+
+        if (file_exists(public_path('storage/' . $path))) {
+            return static::$resolvedAssetPaths[$path] = asset('storage/' . $path);
+        }
+
+        return static::$resolvedAssetPaths[$path] = asset($path);
+    }
+
     public function getImageUrlAttribute(): string
     {
+        if ($this->hasMedia('products')) {
+            return $this->getFirstMediaUrl('products');
+        }
+
         if ($this->relationLoaded('primaryImage') && $this->primaryImage && ! empty($this->primaryImage->image_path)) {
-            $path = $this->primaryImage->image_path;
-            if (str_starts_with($path, 'http')) {
-                return $path;
-            }
-            if (file_exists(public_path($path))) {
-                return asset($path);
-            }
-            if (file_exists(public_path('storage/' . $path))) {
-                return asset('storage/' . $path);
-            }
+            return $this->resolveAssetPath($this->primaryImage->image_path);
         }
 
         return asset('images/shoes/placeholder-shoe.webp');
+    }
+
+    public function getSecondaryImageUrlAttribute(): string
+    {
+        if ($this->hasMedia('products') && $this->getMedia('products')->count() > 1) {
+            return $this->getMedia('products')->get(1)->getUrl();
+        }
+
+        if ($this->relationLoaded('images') && $this->images->count() > 1) {
+            $second = $this->images->skip(1)->first();
+            if ($second && ! empty($second->image_path)) {
+                return $this->resolveAssetPath($second->image_path);
+            }
+        }
+
+        $sidePath = "products/{$this->slug}-side.webp";
+        if (isset(static::$resolvedAssetPaths[$sidePath]) || file_exists(public_path($sidePath))) {
+            return $this->resolveAssetPath($sidePath);
+        }
+
+        return $this->image_url;
     }
 }

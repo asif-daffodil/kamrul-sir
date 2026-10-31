@@ -13,7 +13,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 
 #[Layout('layouts.storefront')]
-#[Title('Order Details | [BRAND_NAME] Bangladesh')]
+#[Title('Order Details | Heel Bari Bangladesh')]
 class OrderDetailPage extends Component
 {
     use WithFileUploads;
@@ -90,7 +90,7 @@ class OrderDetailPage extends Component
         $this->authorize('view', $order);
 
         $storeSettings = [
-            'shop_name' => Setting::get('shop_name', config('shop.brand_name', '[BRAND_NAME]')),
+            'shop_name' => Setting::get('shop_name', config('shop.brand_name', 'Heel Bari')),
             'support_phone' => Setting::get('support_phone', '+880 1700-000000'),
             'whatsapp_number' => Setting::get('whatsapp_number', '+8801700000000'),
         ];

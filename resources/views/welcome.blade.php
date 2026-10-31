@@ -25,7 +25,7 @@
                     </svg>
                 </div>
                 <div>
-                    <span class="block text-base font-extrabold tracking-tight text-slate-900">{{ config('shop.store.name', '[BRAND_NAME]') }}</span>
+                    <span class="block text-base font-extrabold tracking-tight text-slate-900">{{ config('shop.store.name', 'Heel Bari') }}</span>
                     <span class="block text-[10px] font-medium tracking-wide text-rose-600 uppercase">Dhaka, Bangladesh</span>
                 </div>
             </div>

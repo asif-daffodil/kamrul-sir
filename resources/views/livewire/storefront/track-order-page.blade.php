@@ -374,7 +374,7 @@
                         Customer Login
                     </a>
                     <a
-                        href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $storeSettings['whatsapp_number']) }}?text={{ urlencode('Hi [BRAND_NAME], I am inquiring about Order #' . $order->order_number) }}"
+                        href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $storeSettings['whatsapp_number']) }}?text={{ urlencode('Hi Heel Bari, I am inquiring about Order #' . $order->order_number) }}"
                         target="_blank"
                         class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 transition"
                     >

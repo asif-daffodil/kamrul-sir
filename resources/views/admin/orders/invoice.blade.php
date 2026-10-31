@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice #{{ $order->order_number }} — {{ config('shop.store.name', '[BRAND_NAME]') }}</title>
+    <title>Invoice #{{ $order->order_number }} — {{ config('shop.store.name', 'Heel Bari') }}</title>
     <style>
         * {
             box-sizing: border-box;
@@ -201,11 +201,11 @@
         <!-- Header -->
         <div class="header">
             <div>
-                <div class="brand-title">{{ config('shop.store.name', '[BRAND_NAME]') }}</div>
+                <img src="{{ asset('images/logo/heel-bari-logo.png') }}" alt="Heel Bari" style="height: 40px; width: auto; margin-bottom: 6px; display: block;">
                 <div class="brand-sub">Handcrafted Women's Footwear • Bangladesh</div>
                 <div style="margin-top: 6px; font-size: 11px; color: #475569;">
                     Support: {{ config('shop.store.phone', '+8801700000000') }}<br>
-                    Email: {{ config('shop.store.email', 'support@brandfootwear.com') }}<br>
+                    Email: {{ config('shop.store.email', 'care@heelbari.com') }}<br>
                     Dhaka, Bangladesh
                 </div>
             </div>
@@ -302,7 +302,7 @@
 
         <!-- Footer -->
         <div class="footer">
-            <p>Thank you for shopping with {{ config('shop.store.name', '[BRAND_NAME]') }}!</p>
+            <p>Thank you for shopping with {{ config('shop.store.name', 'Heel Bari') }}!</p>
             <p>For exchanges or support, contact us within 7 days of delivery with your order invoice.</p>
         </div>
     </div>

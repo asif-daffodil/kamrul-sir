@@ -33,4 +33,16 @@ class Outlet extends Model
     {
         return $query->where('is_active', true);
     }
+
+    public function getImageUrlAttribute(): string
+    {
+        $slug = $this->slug;
+        if (file_exists(public_path("images/outlets/{$slug}.webp"))) {
+            return asset("images/outlets/{$slug}.webp");
+        }
+        if (file_exists(public_path("storage/outlets/{$slug}.webp"))) {
+            return asset("storage/outlets/{$slug}.webp");
+        }
+        return asset("images/outlets/dhanmondi-flagship-store.webp");
+    }
 }

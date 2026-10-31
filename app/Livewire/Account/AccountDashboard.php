@@ -19,7 +19,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 
 #[Layout('layouts.storefront')]
-#[Title('My Account Dashboard | [BRAND_NAME] Bangladesh')]
+#[Title('My Account Dashboard | Heel Bari Bangladesh')]
 class AccountDashboard extends Component
 {
     use WithFileUploads;

@@ -38,7 +38,7 @@ class ProductDetailsController extends Controller
                 $related = Product::where('category_id', $product->category_id)
                     ->where('id', '!=', $product->id)
                     ->active()
-                    ->with(['primaryImage', 'variants', 'approvedReviews', 'category'])
+                    ->with(['primaryImage', 'images', 'variants', 'approvedReviews', 'category'])
                     ->take(4)
                     ->get();
 
@@ -46,7 +46,7 @@ class ProductDetailsController extends Controller
                     $extra = Product::where('id', '!=', $product->id)
                         ->active()
                         ->whereNotIn('id', $related->pluck('id'))
-                        ->with(['primaryImage', 'variants', 'approvedReviews', 'category'])
+                        ->with(['primaryImage', 'images', 'variants', 'approvedReviews', 'category'])
                         ->take(4 - $related->count())
                         ->get();
                     $related = $related->concat($extra);
@@ -58,13 +58,19 @@ class ProductDetailsController extends Controller
 
         // Store Settings for delivery and contact
         $storeSettings = [
-            'shop_name' => Setting::get('shop_name', config('shop.brand_name', '[BRAND_NAME]')),
+            'shop_name' => Setting::get('shop_name', config('shop.brand_name', 'Heel Bari')),
+            'promo_bar_enabled' => (bool) Setting::get('promo_bar_enabled', true),
+            'promo_bar_text' => Setting::get('promo_bar_text', ''),
+            'prepaid_discount_percent' => (int) Setting::get('prepaid_discount_percent', 5),
+            'cod_available' => (bool) Setting::get('cod_available', true),
             'support_phone' => Setting::get('support_phone', '+880 1700-000000'),
             'support_email' => Setting::get('support_email', 'care@brandfootwear.com'),
             'inside_dhaka_delivery_fee' => (float) Setting::get('inside_dhaka_delivery_fee', 70.00),
             'outside_dhaka_delivery_fee' => (float) Setting::get('outside_dhaka_delivery_fee', 130.00),
             'free_delivery_threshold' => (float) Setting::get('free_delivery_threshold', 3000.00),
-            'whatsapp_number' => Setting::get('whatsapp_number', '+8801700000000'),
+            'facebook_url' => Setting::get('social_facebook', Setting::get('facebook_url', 'https://facebook.com')),
+            'instagram_url' => Setting::get('social_instagram', Setting::get('instagram_url', 'https://instagram.com')),
+            'whatsapp_number' => Setting::get('social_whatsapp', Setting::get('whatsapp_number', '+8801700000000')),
         ];
 
         // Format variants payload for reactive Alpine.js state
@@ -115,7 +121,7 @@ class ProductDetailsController extends Controller
             'sku' => $product->variants->first()?->sku ?? ('WSH-' . $product->id),
             'brand' => [
                 '@type' => 'Brand',
-                'name' => $storeSettings['shop_name'] ?? '[BRAND_NAME]',
+                'name' => $storeSettings['shop_name'] ?? 'Heel Bari',
             ],
             'offers' => [
                 '@type' => 'Offer',
@@ -127,7 +133,7 @@ class ProductDetailsController extends Controller
                 'availability' => $product->total_stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
                 'seller' => [
                     '@type' => 'Organization',
-                    'name' => $storeSettings['shop_name'] ?? '[BRAND_NAME]',
+                    'name' => $storeSettings['shop_name'] ?? 'Heel Bari',
                 ],
             ],
             'aggregateRating' => [

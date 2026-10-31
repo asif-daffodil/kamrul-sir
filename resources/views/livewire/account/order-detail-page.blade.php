@@ -17,7 +17,7 @@
                 <span>Print Receipt</span>
             </button>
             <a
-                href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $storeSettings['whatsapp_number']) }}?text={{ urlencode('Hi [BRAND_NAME], I am inquiring about Order #' . $order->order_number) }}"
+                href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $storeSettings['whatsapp_number']) }}?text={{ urlencode('Hi Heel Bari, I am inquiring about Order #' . $order->order_number) }}"
                 target="_blank"
                 class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider shadow-2xs flex items-center gap-1.5"
             >

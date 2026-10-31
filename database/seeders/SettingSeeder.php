@@ -10,6 +10,29 @@ class SettingSeeder extends Seeder
     public function run(): void
     {
         $settings = [
+            // Top Promo Announcement Bar (Editable in Admin)
+            [
+                'key' => 'promo_bar_enabled',
+                'value' => 'true',
+                'group' => 'announcement',
+                'type' => 'boolean',
+                'description' => 'Show or hide the top announcement bar',
+            ],
+            [
+                'key' => 'promo_bar_text',
+                'value' => 'Free Home Delivery Inside Dhaka on orders over ৳3,000 • Cash on Delivery in all 64 districts • Extra 5% OFF on bKash / Card Prepaid',
+                'group' => 'announcement',
+                'type' => 'string',
+                'description' => 'Announcement text shown in top bar',
+            ],
+            [
+                'key' => 'prepaid_discount_percent',
+                'value' => '5',
+                'group' => 'payment',
+                'type' => 'integer',
+                'description' => 'Extra promotional discount percentage for online prepaid orders (%)',
+            ],
+
             // Delivery Charges & Policies
             [
                 'key' => 'inside_dhaka_delivery_fee',
@@ -57,7 +80,7 @@ class SettingSeeder extends Seeder
             // General & Store Branding
             [
                 'key' => 'shop_name',
-                'value' => '[BRAND_NAME]',
+                'value' => 'Heel Bari',
                 'group' => 'general',
                 'type' => 'string',
                 'description' => 'Official Brand Name for Store & Notifications',

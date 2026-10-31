@@ -41,7 +41,7 @@ class AdminNewOrderNotification extends Notification implements ShouldQueue
 
     public function toMail(object $notifiable): MailMessage
     {
-        $brandName = Setting::get('shop_name', config('shop.brand_name', '[BRAND_NAME]'));
+        $brandName = Setting::get('shop_name', config('shop.brand_name', 'Heel Bari'));
         $adminOrderUrl = url("/admin/orders/{$this->order->id}/edit");
 
         $mail = (new MailMessage)

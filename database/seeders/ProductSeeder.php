@@ -450,15 +450,76 @@ class ProductSeeder extends Seeder
                 ]
             );
 
-            // Create primary image
-            ProductImage::updateOrCreate(
-                ['product_id' => $product->id, 'is_primary' => true],
-                [
-                    'image_path' => 'products/' . $slug . '-main.webp',
-                    'alt_text' => $data['name'] . ' in Bangladesh',
-                    'sort_order' => 0,
-                ]
-            );
+            // Generate 3 variants (main, side, detail) in 1000x1000 and 800x1000 portrait
+            $imageGen = new \App\Services\PlaceholderImageGenerator();
+            $variantsToGen = [
+                'main' => ['sort' => 0, 'primary' => true, 'label' => 'Main View'],
+                'side' => ['sort' => 1, 'primary' => false, 'label' => 'Side Profile'],
+                'detail' => ['sort' => 2, 'primary' => false, 'label' => 'Craftsmanship Detail'],
+            ];
+
+            $productMediaPaths = [];
+            foreach ($variantsToGen as $vKey => $vMeta) {
+                $sqRelPath = "products/{$slug}-{$vKey}.webp";
+                $sqFullPath = public_path($sqRelPath);
+                $storageSqPath = storage_path("app/public/{$sqRelPath}");
+
+                // Only generate placeholder if real photography is not already present
+                if (! file_exists($sqFullPath) || filesize($sqFullPath) < 30000) {
+                    $imageGen->generateProductPlaceholder(
+                        $data['name'],
+                        $category?->name ?? 'Footwear',
+                        $vKey,
+                        1000,
+                        1000,
+                        $sqFullPath
+                    );
+                }
+
+                if (! is_dir(dirname($storageSqPath))) {
+                    mkdir(dirname($storageSqPath), 0755, true);
+                }
+                copy($sqFullPath, $storageSqPath);
+
+                // Also generate 800x1000 portrait crop
+                $portRelPath = "products/{$slug}-{$vKey}-portrait.webp";
+                $portFullPath = public_path($portRelPath);
+                $storagePortPath = storage_path("app/public/{$portRelPath}");
+
+                if (! file_exists($portFullPath) || filesize($portFullPath) < 30000) {
+                    $imageGen->generateProductPlaceholder(
+                        $data['name'],
+                        $category?->name ?? 'Footwear',
+                        $vKey,
+                        800,
+                        1000,
+                        $portFullPath
+                    );
+                }
+                copy($portFullPath, $storagePortPath);
+
+                $productMediaPaths[] = $sqFullPath;
+
+                // Create or update ProductImage record
+                ProductImage::updateOrCreate(
+                    ['product_id' => $product->id, 'sort_order' => $vMeta['sort']],
+                    [
+                        'image_path' => $sqRelPath,
+                        'alt_text' => "{$data['name']} - {$vMeta['label']} - Heel Bari Bangladesh",
+                        'is_primary' => $vMeta['primary'],
+                    ]
+                );
+            }
+
+            // Attach to Spatie MediaLibrary
+            $product->clearMediaCollection('products');
+            foreach ($productMediaPaths as $mediaPath) {
+                if (file_exists($mediaPath)) {
+                    $product->addMedia($mediaPath)
+                        ->preservingOriginal()
+                        ->toMediaCollection('products');
+                }
+            }
 
             // Generate Variants for each color and size combination
             foreach ($data['colors'] as $color) {

@@ -387,7 +387,7 @@
                         </a>
 
                         <a
-                            href="https://wa.me/8801700000000?text={{ urlencode('Hi [BRAND_NAME]! I want to complete my order of ' . $calculation['items_count'] . ' pairs for BDT ' . $calculation['grand_total']) }}"
+                            href="https://wa.me/8801700000000?text={{ urlencode('Hi Heel Bari! I want to complete my order of ' . $calculation['items_count'] . ' pairs for BDT ' . $calculation['grand_total']) }}"
                             target="_blank"
                             rel="noopener"
                             class="w-full py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition shadow-sm"

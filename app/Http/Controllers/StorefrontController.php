@@ -48,7 +48,7 @@ class StorefrontController extends Controller
 
             // 3. New Arrivals (latest 8 products)
             $newArrivals = Product::active()
-                ->with(['primaryImage', 'variants', 'approvedReviews', 'category'])
+                ->with(['primaryImage', 'images', 'variants', 'approvedReviews', 'category'])
                 ->latest()
                 ->take(8)
                 ->get();
@@ -56,41 +56,89 @@ class StorefrontController extends Controller
             // 4. Best Selling (featured 8 products)
             $bestSellers = Product::active()
                 ->where('is_featured', true)
-                ->with(['primaryImage', 'variants', 'approvedReviews', 'category'])
+                ->with(['primaryImage', 'images', 'variants', 'approvedReviews', 'category'])
                 ->take(8)
                 ->get();
 
             if ($bestSellers->count() < 4) {
                 $bestSellers = Product::active()
-                    ->with(['primaryImage', 'variants', 'approvedReviews', 'category'])
+                    ->with(['primaryImage', 'images', 'variants', 'approvedReviews', 'category'])
                     ->take(8)
                     ->get();
             }
 
-            // 5. Customer Reviews
+            // 5. Shop by Occasion Curations
+            $occasions = [
+                [
+                    'title' => 'Wedding & Reception',
+                    'subtitle' => 'Opulent bridal pumps, metallic stilettos & hand-embroidered resham zari heels.',
+                    'image' => asset('images/categories/heels.webp'),
+                    'badge' => 'BRIDAL COUTURE',
+                    'link' => route('category.show', 'stilettos'),
+                ],
+                [
+                    'title' => 'Festive & Party Glam',
+                    'subtitle' => 'Lustrous velvet block heels and embellished mules engineered for 6-hour celebrations.',
+                    'image' => asset('images/categories/block-heels.webp'),
+                    'badge' => 'CELEBRATION READY',
+                    'link' => route('category.show', 'block-heels'),
+                ],
+                [
+                    'title' => 'Work & Corporate Chic',
+                    'subtitle' => 'Sleek pointed flats, kitten slingbacks & tailored loafers with cloud arch contour.',
+                    'image' => asset('images/categories/flats.webp'),
+                    'badge' => '9-TO-5 COMFORT',
+                    'link' => route('category.show', 'flats'),
+                ],
+                [
+                    'title' => 'Weekend & Casual Ease',
+                    'subtitle' => 'Contoured cork Boston clogs, buttery braided slides & ethnic daily chappals.',
+                    'image' => asset('images/categories/boston-clogs.webp'),
+                    'badge' => 'CLOUD WALKING',
+                    'link' => route('category.show', 'boston-clogs'),
+                ],
+            ];
+
+            // 6. Outlet & Archive Deals (Sale items)
+            $outletProducts = Product::active()
+                ->whereHas('variants', fn ($q) => $q->whereNotNull('sale_price'))
+                ->with(['primaryImage', 'images', 'variants', 'approvedReviews', 'category'])
+                ->take(4)
+                ->get();
+
+            if ($outletProducts->isEmpty()) {
+                $outletProducts = $bestSellers->take(4);
+            }
+
+            // 7. Customer Reviews
             $reviews = Review::where('is_approved', true)
-                ->with(['user', 'product.primaryImage'])
+                ->with(['user.defaultAddress', 'product.primaryImage', 'product.category'])
                 ->latest()
                 ->take(6)
                 ->get();
 
-            // 6. Retail Outlets
+            // 8. Retail Outlets
             $outlets = Outlet::where('is_active', true)
                 ->orderBy('district', 'asc')
                 ->get();
 
-            // 7. Store Settings & Policies
+            // 9. Store Settings & Policies
+            $allSettings = Setting::getAllCached();
             $storeSettings = [
-                'shop_name' => Setting::get('shop_name', config('shop.brand_name', '[BRAND_NAME]')),
-                'shop_tagline' => Setting::get('shop_tagline', 'Handcrafted Footwear for Bangladeshi Women'),
-                'support_phone' => Setting::get('support_phone', '+880 1700-000000'),
-                'support_email' => Setting::get('support_email', 'care@brandfootwear.com'),
-                'inside_dhaka_delivery_fee' => (float) Setting::get('inside_dhaka_delivery_fee', 70.00),
-                'outside_dhaka_delivery_fee' => (float) Setting::get('outside_dhaka_delivery_fee', 130.00),
-                'free_delivery_threshold' => (float) Setting::get('free_delivery_threshold', 3000.00),
-                'facebook_url' => Setting::get('facebook_url', 'https://facebook.com'),
-                'instagram_url' => Setting::get('instagram_url', 'https://instagram.com'),
-                'whatsapp_number' => Setting::get('whatsapp_number', '+8801700000000'),
+                'shop_name' => $allSettings['shop_name'] ?? config('shop.brand_name', 'Heel Bari'),
+                'shop_tagline' => $allSettings['shop_tagline'] ?? 'Handcrafted Footwear for Bangladeshi Women',
+                'promo_bar_enabled' => (bool) ($allSettings['promo_bar_enabled'] ?? true),
+                'promo_bar_text' => $allSettings['promo_bar_text'] ?? '',
+                'prepaid_discount_percent' => (int) ($allSettings['prepaid_discount_percent'] ?? 5),
+                'cod_available' => (bool) ($allSettings['cod_available'] ?? true),
+                'support_phone' => $allSettings['support_phone'] ?? '+880 1700-000000',
+                'support_email' => $allSettings['support_email'] ?? 'care@brandfootwear.com',
+                'inside_dhaka_delivery_fee' => (float) ($allSettings['inside_dhaka_delivery_fee'] ?? 70.00),
+                'outside_dhaka_delivery_fee' => (float) ($allSettings['outside_dhaka_delivery_fee'] ?? 130.00),
+                'free_delivery_threshold' => (float) ($allSettings['free_delivery_threshold'] ?? 3000.00),
+                'facebook_url' => $allSettings['social_facebook'] ?? ($allSettings['facebook_url'] ?? 'https://facebook.com'),
+                'instagram_url' => $allSettings['social_instagram'] ?? ($allSettings['instagram_url'] ?? 'https://instagram.com'),
+                'whatsapp_number' => $allSettings['social_whatsapp'] ?? ($allSettings['whatsapp_number'] ?? '+8801700000000'),
             ];
 
             return compact(
@@ -98,6 +146,8 @@ class StorefrontController extends Controller
                 'categories',
                 'newArrivals',
                 'bestSellers',
+                'occasions',
+                'outletProducts',
                 'reviews',
                 'outlets',
                 'storeSettings'

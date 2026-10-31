@@ -18,12 +18,18 @@ class Setting extends Model
         'description',
     ];
 
+    protected static array $runtimeCache = [];
+
     /**
      * Retrieve a setting value by key, with caching.
      */
     public static function get(string $key, mixed $default = null): mixed
     {
-        return Cache::remember("setting.{$key}", 3600, function () use ($key, $default) {
+        if (array_key_exists($key, static::$runtimeCache)) {
+            return static::$runtimeCache[$key];
+        }
+
+        $value = Cache::remember("setting.{$key}", 3600, function () use ($key, $default) {
             $setting = static::where('key', $key)->first();
 
             if (! $setting) {
@@ -38,6 +44,8 @@ class Setting extends Model
                 default => $setting->value,
             };
         });
+
+        return static::$runtimeCache[$key] = $value;
     }
 
     /**
@@ -93,12 +101,14 @@ class Setting extends Model
     protected static function booted(): void
     {
         static::saved(function (Setting $setting) {
+            static::$runtimeCache = [];
             Cache::forget("setting.{$setting->key}");
             Cache::forget('settings_all_group');
             Cache::forget('storefront_home_data');
         });
 
         static::deleted(function (Setting $setting) {
+            static::$runtimeCache = [];
             Cache::forget("setting.{$setting->key}");
             Cache::forget('settings_all_group');
             Cache::forget('storefront_home_data');

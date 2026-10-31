@@ -22,7 +22,7 @@ return [
     ],
 
     'store' => [
-        'name' => env('APP_BRAND_NAME', 'Brand Name'),
+        'name' => env('APP_BRAND_NAME', 'Heel Bari'),
         'country' => 'Bangladesh',
         'default_locale' => env('APP_LOCALE', 'en'),
         'timezone' => env('APP_TIMEZONE', 'Asia/Dhaka'),

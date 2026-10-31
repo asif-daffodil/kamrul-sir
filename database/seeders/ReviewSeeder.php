@@ -18,6 +18,25 @@ class ReviewSeeder extends Seeder
             return;
         }
 
+        $imageGen = new \App\Services\PlaceholderImageGenerator();
+        foreach ($customers as $cust) {
+            $slug = \Illuminate\Support\Str::slug($cust->name);
+            $avRel = "images/avatars/{$slug}.webp";
+            $avFull = public_path($avRel);
+            $avStorage = storage_path("app/public/avatars/{$slug}.webp");
+
+            $imageGen->generateReviewAvatar($cust->name, 200, $avFull);
+            if (! is_dir(dirname($avStorage))) {
+                mkdir(dirname($avStorage), 0755, true);
+            }
+            copy($avFull, $avStorage);
+
+            $cust->clearMediaCollection('avatars');
+            if (file_exists($avFull)) {
+                $cust->addMedia($avFull)->preservingOriginal()->toMediaCollection('avatars');
+            }
+        }
+
         $reviewsPool = [
             [
                 'rating' => 5,

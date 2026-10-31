@@ -35,6 +35,9 @@ class ManageSettings extends Page implements HasForms
     public function mount(): void
     {
         $this->form->fill([
+            'promo_bar_enabled' => Setting::get('promo_bar_enabled', true),
+            'promo_bar_text' => Setting::get('promo_bar_text', 'Complimentary Delivery on orders over ৳3,000 • Cash on Delivery in all 64 districts • Extra 5% OFF on bKash / Card Prepaid'),
+            'prepaid_discount_percent' => Setting::get('prepaid_discount_percent', 5),
             'inside_dhaka_delivery_fee' => Setting::get('inside_dhaka_delivery_fee', '70.00'),
             'outside_dhaka_delivery_fee' => Setting::get('outside_dhaka_delivery_fee', '130.00'),
             'sub_dhaka_delivery_fee' => Setting::get('sub_dhaka_delivery_fee', '100.00'),
@@ -55,6 +58,26 @@ class ManageSettings extends Page implements HasForms
     {
         return $schema
             ->components([
+                Section::make('Top Promo Bar (Storefront Header)')
+                    ->description('Manage promotional announcement bar displayed across all storefront pages')
+                    ->columns(3)
+                    ->schema([
+                        Toggle::make('promo_bar_enabled')
+                            ->label('Enable Top Promo Bar')
+                            ->default(true),
+                        TextInput::make('prepaid_discount_percent')
+                            ->label('Extra Prepaid Discount (%)')
+                            ->numeric()
+                            ->suffix('%')
+                            ->default(5)
+                            ->helperText('Promotional extra discount on bKash or card prepaid orders'),
+                        TextInput::make('promo_bar_text')
+                            ->label('Custom Announcement Text')
+                            ->placeholder('Complimentary Delivery on orders over ৳3,000...')
+                            ->columnSpanFull()
+                            ->helperText('Leave empty to auto-compose from delivery threshold & prepaid discount'),
+                    ]),
+
                 Section::make('Delivery Fees & Free Shipping Thresholds')
                     ->description('Set regional courier charges across Bangladesh')
                     ->columns(2)
@@ -136,10 +159,11 @@ class ManageSettings extends Page implements HasForms
 
         foreach ($data as $key => $value) {
             $group = match (true) {
+                str_contains($key, 'promo_') => 'announcement',
                 str_contains($key, 'fee') || str_contains($key, 'threshold') => 'delivery',
                 str_contains($key, 'phone') || str_contains($key, 'email') || str_contains($key, 'address') => 'contact',
                 str_contains($key, 'social_') => 'social',
-                str_contains($key, 'bkash') || str_contains($key, 'cod') => 'payment',
+                str_contains($key, 'bkash') || str_contains($key, 'cod') || str_contains($key, 'prepaid') => 'payment',
                 default => 'general',
             };
 
