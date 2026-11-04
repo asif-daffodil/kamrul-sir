@@ -1,0 +1,18 @@
+
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews
+    </IfModule>
+
+    RewriteEngine On
+
+    # Block sensitive files and directories
+    RewriteRule ^(\.env|\.git|cfo_admin\.sql|test_delete\.php|composer\.(json|lock)|artisan|vendor/|app/|config/|database/|routes/|bootstrap/) - [F,L,NC]
+
+    # Serve existing files from public/
+    RewriteCond %{DOCUMENT_ROOT}/public/$1 -f
+    RewriteRule ^(.+)$ public/$1 [L]
+
+    # Everything else goes to Laravel
+    RewriteRule ^ public/index.php [L]
+</IfModule>
