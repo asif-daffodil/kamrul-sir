@@ -29,7 +29,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->brandName('Heel Bari')
-            ->brandLogo(fn () => view('filament.components.brand-logo'))
+            ->brandLogo(asset('images/logo/heel-bari-logo.webp'))
             ->brandLogoHeight('2.5rem')
             ->favicon(asset('favicon.ico'))
             ->colors([
