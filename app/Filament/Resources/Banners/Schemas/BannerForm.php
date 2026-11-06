@@ -15,9 +15,11 @@ class BannerForm
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
                 Section::make('Hero Slide Content')
-                    ->columns(2)
+                    ->columnSpanFull()
+                    ->columns(['default' => 1, 'md' => 2])
                     ->schema([
                         TextInput::make('badge')
                             ->label('Top Eyebrow Badge')
@@ -44,7 +46,8 @@ class BannerForm
                     ]),
 
                 Section::make('Design & Visuals')
-                    ->columns(2)
+                    ->columnSpanFull()
+                    ->columns(['default' => 1, 'md' => 2])
                     ->schema([
                         FileUpload::make('image_path')
                             ->label('Hero Shoe Visual (WebP / PNG)')
@@ -61,7 +64,10 @@ class BannerForm
                                 'from-slate-950 via-zinc-900 to-neutral-900' => 'Modern Slate & Dark Silver',
                                 'from-emerald-950 via-teal-950 to-black' => 'Deep Emerald & Black',
                             ])
-                            ->default('from-rose-950 via-neutral-900 to-black'),
+                            ->default('from-rose-950 via-neutral-900 to-black')
+                            ->searchable()
+                            ->preload()
+                            ->native(false),
                         TextInput::make('sort_order')
                             ->label('Slide Position / Order')
                             ->numeric()

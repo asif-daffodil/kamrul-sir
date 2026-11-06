@@ -21,6 +21,8 @@ class CategoryForm
                     ->label('Parent Category')
                     ->options(fn () => Category::roots()->pluck('name', 'id'))
                     ->searchable()
+                    ->preload()
+                    ->native(false)
                     ->placeholder('None (Root Category)')
                     ->default(null),
                 TextInput::make('name')

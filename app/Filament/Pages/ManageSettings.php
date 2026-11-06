@@ -57,10 +57,12 @@ class ManageSettings extends Page implements HasForms
     public function form(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
                 Section::make('Top Promo Bar (Storefront Header)')
                     ->description('Manage promotional announcement bar displayed across all storefront pages')
-                    ->columns(3)
+                    ->columnSpanFull()
+                    ->columns(['default' => 1, 'sm' => 2, 'lg' => 3])
                     ->schema([
                         Toggle::make('promo_bar_enabled')
                             ->label('Enable Top Promo Bar')
@@ -80,7 +82,8 @@ class ManageSettings extends Page implements HasForms
 
                 Section::make('Delivery Fees & Free Shipping Thresholds')
                     ->description('Set regional courier charges across Bangladesh')
-                    ->columns(2)
+                    ->columnSpanFull()
+                    ->columns(['default' => 1, 'sm' => 2])
                     ->schema([
                         TextInput::make('inside_dhaka_delivery_fee')
                             ->label('Inside Dhaka Delivery (৳)')
@@ -106,7 +109,8 @@ class ManageSettings extends Page implements HasForms
                     ]),
 
                 Section::make('Store Customer Support & Contact Information')
-                    ->columns(3)
+                    ->columnSpanFull()
+                    ->columns(['default' => 1, 'sm' => 2, 'lg' => 3])
                     ->schema([
                         TextInput::make('support_phone')
                             ->label('Customer Helpline')
@@ -127,7 +131,8 @@ class ManageSettings extends Page implements HasForms
                     ]),
 
                 Section::make('Social Channels & Messenger Links')
-                    ->columns(3)
+                    ->columnSpanFull()
+                    ->columns(['default' => 1, 'sm' => 2, 'lg' => 3])
                     ->schema([
                         TextInput::make('social_facebook')
                             ->label('Facebook Page URL')
@@ -141,7 +146,8 @@ class ManageSettings extends Page implements HasForms
                     ]),
 
                 Section::make('Payment Policies & Gateways')
-                    ->columns(2)
+                    ->columnSpanFull()
+                    ->columns(['default' => 1, 'sm' => 2])
                     ->schema([
                         TextInput::make('bkash_merchant_number')
                             ->label('bKash Merchant Account Number'),

@@ -13,17 +13,21 @@ class ReviewForm
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
                 Section::make('Customer Review Details')
-                    ->columns(2)
+                    ->columnSpanFull()
+                    ->columns(['default' => 1, 'md' => 2])
                     ->schema([
                         Select::make('product_id')
                             ->relationship('product', 'name')
                             ->searchable()
+                            ->preload()
                             ->required(),
                         Select::make('user_id')
                             ->relationship('user', 'name')
                             ->searchable()
+                            ->preload()
                             ->nullable(),
                         Select::make('rating')
                             ->options([
@@ -33,7 +37,10 @@ class ReviewForm
                                 2 => '⭐⭐ (2/5)',
                                 1 => '⭐ (1/5)',
                             ])
-                            ->required(),
+                            ->required()
+                            ->searchable()
+                            ->preload()
+                            ->native(false),
                         Toggle::make('is_approved')
                             ->label('Approved & Published')
                             ->helperText('Visible to store visitors on product page')

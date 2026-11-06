@@ -15,9 +15,11 @@ class CouponForm
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
                 Section::make('Coupon Voucher Details')
-                    ->columns(2)
+                    ->columnSpanFull()
+                    ->columns(['default' => 1, 'md' => 2])
                     ->schema([
                         TextInput::make('code')
                             ->label('Promo Code')
@@ -32,7 +34,10 @@ class CouponForm
                                 'percentage' => 'Percentage (%)',
                             ])
                             ->default('fixed')
-                            ->required(),
+                            ->required()
+                            ->searchable()
+                            ->preload()
+                            ->native(false),
                         TextInput::make('value')
                             ->label('Discount Value')
                             ->numeric()
