@@ -98,6 +98,8 @@ class OrdersTable
             ->defaultSort('created_at', 'desc')
             ->filters([
                 SelectFilter::make('status')
+                    ->searchable()
+                    ->preload()
                     ->options([
                         'pending' => 'Pending',
                         'confirmed' => 'Confirmed',
@@ -109,11 +111,15 @@ class OrdersTable
                     ]),
                 SelectFilter::make('courier_name')
                     ->label('Courier')
+                    ->searchable()
+                    ->preload()
                     ->options([
                         'steadfast' => 'Steadfast Courier',
                         'pathao' => 'Pathao Courier',
                     ]),
                 SelectFilter::make('payment_status')
+                    ->searchable()
+                    ->preload()
                     ->options([
                         'pending' => 'Pending',
                         'paid' => 'Paid',
@@ -121,6 +127,8 @@ class OrdersTable
                     ]),
                 SelectFilter::make('shipping_district')
                     ->label('District')
+                    ->searchable()
+                    ->preload()
                     ->options([
                         'Dhaka' => 'Dhaka',
                         'Chittagong' => 'Chittagong',
@@ -146,6 +154,8 @@ class OrdersTable
                             ])
                             ->default(config('courier.default', 'steadfast'))
                             ->required()
+                            ->searchable()
+                            ->preload()
                             ->native(false),
                         \Filament\Forms\Components\TextInput::make('note')
                             ->label('Delivery Instructions / Note')

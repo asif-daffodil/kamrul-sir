@@ -14,9 +14,11 @@ class UserForm
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
                 Section::make('Customer / Account Profile')
-                    ->columns(2)
+                    ->columnSpanFull()
+                    ->columns(['default' => 1, 'md' => 2])
                     ->schema([
                         TextInput::make('name')
                             ->required()
@@ -36,7 +38,10 @@ class UserForm
                                 'admin' => 'Administrator',
                             ])
                             ->default('customer')
-                            ->required(),
+                            ->required()
+                            ->searchable()
+                            ->preload()
+                            ->native(false),
                         TextInput::make('password')
                             ->password()
                             ->dehydrated(fn ($state) => filled($state))

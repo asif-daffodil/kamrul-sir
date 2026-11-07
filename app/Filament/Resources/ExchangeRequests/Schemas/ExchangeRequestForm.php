@@ -14,17 +14,21 @@ class ExchangeRequestForm
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
                 Section::make('Exchange Request Details')
-                    ->columns(2)
+                    ->columnSpanFull()
+                    ->columns(['default' => 1, 'md' => 2])
                     ->schema([
                         Select::make('order_id')
                             ->relationship('order', 'order_number')
                             ->searchable()
+                            ->preload()
                             ->required(),
                         Select::make('user_id')
                             ->relationship('user', 'name')
                             ->searchable()
+                            ->preload()
                             ->nullable(),
                         TextInput::make('reason')
                             ->label('Exchange Reason')
@@ -37,7 +41,10 @@ class ExchangeRequestForm
                                 'rejected' => 'Rejected',
                                 'completed' => 'Completed / Replacement Sent',
                             ])
-                            ->required(),
+                            ->required()
+                            ->searchable()
+                            ->preload()
+                            ->native(false),
                         FileUpload::make('photo_path')
                             ->label('Uploaded Footwear Inspection Photo')
                             ->image()

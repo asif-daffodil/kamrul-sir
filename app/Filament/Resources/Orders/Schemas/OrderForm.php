@@ -14,10 +14,12 @@ class OrderForm
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
                 Section::make('Order Status & Lifecycle')
                     ->description('Manage order workflow and transition states')
-                    ->columns(3)
+                    ->columnSpanFull()
+                    ->columns(['default' => 1, 'sm' => 2, 'lg' => 3])
                     ->schema([
                         TextInput::make('order_number')
                             ->label('Order Number')
@@ -35,6 +37,8 @@ class OrderForm
                                 'returned' => 'Returned / Returned by Courier',
                             ])
                             ->required()
+                            ->searchable()
+                            ->preload()
                             ->native(false),
                         Select::make('payment_status')
                             ->label('Payment Status')
@@ -45,6 +49,8 @@ class OrderForm
                                 'refunded' => 'Refunded',
                             ])
                             ->required()
+                            ->searchable()
+                            ->preload()
                             ->native(false),
                         Select::make('payment_method')
                             ->label('Payment Channel')
@@ -55,10 +61,15 @@ class OrderForm
                                 'sslcommerz' => 'SSLCommerz Gateway',
                             ])
                             ->required()
-                            ->native(false),
+                            ->searchable()
+                            ->preload()
+                            ->native(false)
+                            ->columnSpan(['default' => 1, 'lg' => 2]),
                         TextInput::make('coupon_code')
                             ->label('Applied Coupon')
-                            ->disabled(),
+                            ->placeholder('No coupon applied')
+                            ->disabled()
+                            ->columnSpan(['default' => 1, 'lg' => 1]),
                         TextInput::make('status_comment')
                             ->label('Log Note for Status Change')
                             ->placeholder('e.g. Courier tracking ID: STEADFAST-998812')
@@ -68,7 +79,8 @@ class OrderForm
 
                 Section::make('Courier & Logistics Delivery')
                     ->description('Steadfast and Pathao consignment details and live courier status')
-                    ->columns(3)
+                    ->columnSpanFull()
+                    ->columns(['default' => 1, 'sm' => 2, 'md' => 3, 'lg' => 5])
                     ->collapsible()
                     ->schema([
                         TextInput::make('courier_name')
@@ -94,7 +106,8 @@ class OrderForm
 
                 Section::make('Customer & Shipping Details')
                     ->description('Contact and delivery address across Bangladesh')
-                    ->columns(3)
+                    ->columnSpanFull()
+                    ->columns(['default' => 1, 'sm' => 2, 'lg' => 3])
                     ->schema([
                         TextInput::make('customer_name')
                             ->label('Recipient Name')
@@ -128,29 +141,34 @@ class OrderForm
 
                 Section::make('Purchased Footwear Items')
                     ->description('Snapshotted items at checkout')
+                    ->columnSpanFull()
                     ->collapsible()
                     ->schema([
                         Repeater::make('items')
                             ->relationship('items')
-                            ->columns(4)
+                            ->columns(['default' => 1, 'md' => 5])
                             ->schema([
                                 TextInput::make('product_name')
                                     ->label('Product Name')
-                                    ->disabled(),
+                                    ->disabled()
+                                    ->columnSpan(['default' => 1, 'md' => 2]),
                                 TextInput::make('unit_price')
                                     ->label('Unit Price (৳)')
                                     ->prefix('৳')
                                     ->numeric()
-                                    ->disabled(),
+                                    ->disabled()
+                                    ->columnSpan(1),
                                 TextInput::make('quantity')
                                     ->label('Quantity')
                                     ->numeric()
-                                    ->disabled(),
+                                    ->disabled()
+                                    ->columnSpan(1),
                                 TextInput::make('total_price')
                                     ->label('Item Total (৳)')
                                     ->prefix('৳')
                                     ->numeric()
-                                    ->disabled(),
+                                    ->disabled()
+                                    ->columnSpan(1),
                             ])
                             ->addable(false)
                             ->deletable(false)
@@ -158,7 +176,8 @@ class OrderForm
                     ]),
 
                 Section::make('Financials Breakdown (BDT)')
-                    ->columns(4)
+                    ->columnSpanFull()
+                    ->columns(['default' => 1, 'sm' => 2, 'lg' => 4])
                     ->schema([
                         TextInput::make('subtotal')
                             ->label('Subtotal')

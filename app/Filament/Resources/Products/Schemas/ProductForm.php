@@ -21,10 +21,12 @@ class ProductForm
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
                 Section::make('Product Details')
                     ->description('Primary product metadata and pricing')
-                    ->columns(2)
+                    ->columnSpanFull()
+                    ->columns(['default' => 1, 'md' => 2])
                     ->schema([
                         TextInput::make('name')
                             ->required()
@@ -62,6 +64,7 @@ class ProductForm
 
                 Section::make('Product Gallery')
                     ->description('Multiple image upload with WebP conversion')
+                    ->columnSpanFull()
                     ->collapsible()
                     ->schema([
                         Repeater::make('images')
@@ -95,6 +98,7 @@ class ProductForm
 
                 Section::make('Product Variants (SKUs, Colors, Sizes & Stock)')
                     ->description('Color, shoe sizes, SKUs, inventory stock and promotional sale prices')
+                    ->columnSpanFull()
                     ->collapsible()
                     ->schema([
                         Repeater::make('variants')
@@ -118,7 +122,10 @@ class ProductForm
                                         '40' => 'EU 40',
                                         '41' => 'EU 41',
                                     ])
-                                    ->required(),
+                                    ->required()
+                                    ->searchable()
+                                    ->preload()
+                                    ->native(false),
                                 TextInput::make('sku')
                                     ->label('SKU')
                                     ->required()

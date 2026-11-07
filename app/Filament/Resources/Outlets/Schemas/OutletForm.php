@@ -16,9 +16,11 @@ class OutletForm
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
                 Section::make('Physical Storefront Details')
-                    ->columns(2)
+                    ->columnSpanFull()
+                    ->columns(['default' => 1, 'md' => 2])
                     ->schema([
                         TextInput::make('name')
                             ->label('Showroom Name')
@@ -37,7 +39,10 @@ class OutletForm
                                 'Rajshahi' => 'Rajshahi',
                                 'Khulna' => 'Khulna',
                             ])
-                            ->required(),
+                            ->required()
+                            ->searchable()
+                            ->preload()
+                            ->native(false),
                         TextInput::make('phone')
                             ->label('Store Phone')
                             ->tel()

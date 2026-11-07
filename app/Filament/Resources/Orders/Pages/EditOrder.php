@@ -75,6 +75,8 @@ class EditOrder extends EditRecord
                         ])
                         ->default(config('courier.default', 'steadfast'))
                         ->required()
+                        ->searchable()
+                        ->preload()
                         ->native(false),
                     \Filament\Forms\Components\TextInput::make('note')
                         ->label('Delivery Instructions / Note')

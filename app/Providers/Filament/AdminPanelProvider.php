@@ -32,6 +32,7 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogo(asset('images/logo/heel-bari-logo.webp'))
             ->brandLogoHeight('2.5rem')
             ->favicon(asset('favicon.ico'))
+            ->sidebarCollapsibleOnDesktop()
             ->colors([
                 'primary' => Color::Rose,
                 'gray' => Color::Slate,
