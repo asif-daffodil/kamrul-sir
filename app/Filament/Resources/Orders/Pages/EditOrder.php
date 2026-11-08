@@ -135,4 +135,13 @@ class EditOrder extends EditRecord
             RestoreAction::make(),
         ];
     }
+
+    protected function getSavedNotification(): ?\Filament\Notifications\Notification
+    {
+        return \Filament\Notifications\Notification::make()
+            ->success()
+            ->title('Order Updated Successfully')
+            ->body("Order #{$this->record->order_number} details have been saved.")
+            ->duration(5000);
+    }
 }
